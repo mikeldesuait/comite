@@ -31,11 +31,35 @@ const MODELO = (() => {
   function getResponsables() {
     let cfg = {};
     try { cfg = JSON.parse(localStorage.getItem(STORAGE_CONFIG) || '{}'); } catch {}
+    
     const lista = [];
-    if (cfg.comitePresidente) lista.push({ valor: cfg.comitePresidente, rol: 'Presidente/a' });
-    if (cfg.comiteSecretario) lista.push({ valor: cfg.comiteSecretario, rol: 'Secretario/a' });
-    if (cfg.comiteVocal1) lista.push({ valor: cfg.comiteVocal1, rol: 'Vocal 1' });
-    if (cfg.comiteVocal2) lista.push({ valor: cfg.comiteVocal2, rol: 'Vocal 2' });
+    
+    // 1. Representantes de la Empresa (fijos)
+    if (cfg.empresaRep1) lista.push({ valor: cfg.empresaRep1, rol: 'Empresa' });
+    if (cfg.empresaRep2) lista.push({ valor: cfg.empresaRep2, rol: 'Empresa' });
+    if (cfg.empresaRep3) lista.push({ valor: cfg.empresaRep3, rol: 'Empresa' });
+
+    // 2. Representantes de los Trabajadores (fijos)
+    if (cfg.trabajadoresRep1) lista.push({ valor: cfg.trabajadoresRep1, rol: 'Trabajadores' });
+    if (cfg.trabajadoresRep2) lista.push({ valor: cfg.trabajadoresRep2, rol: 'Trabajadores' });
+    if (cfg.trabajadoresRep3) lista.push({ valor: cfg.trabajadoresRep3, rol: 'Trabajadores' });
+
+    // 3. Miembros Dinámicos (los que se añaden con el botón +)
+    if (cfg.empresaMiembrosExtra && Array.isArray(cfg.empresaMiembrosExtra)) {
+        cfg.empresaMiembrosExtra.forEach(m => {
+            lista.push({ valor: m.nombre, rol: `Empresa (${m.rol})` });
+        });
+    }
+    if (cfg.trabajadoresMiembrosExtra && Array.isArray(cfg.trabajadoresMiembrosExtra)) {
+        cfg.trabajadoresMiembrosExtra.forEach(m => {
+            lista.push({ valor: m.nombre, rol: `Trabajadores (${m.rol})` });
+        });
+    }
+
+    // 4. Cargos de la Mesa (Presidente y Secretario)
+    if (cfg.comitePresidente) lista.push({ valor: cfg.comitePresidente, rol: 'Presidencia' });
+    if (cfg.comiteSecretario) lista.push({ valor: cfg.comiteSecretario, rol: 'Secretaría' });
+    
     return lista;
   }
 
