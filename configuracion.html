@@ -90,58 +90,25 @@
                     <!-- PARTE EMPRESA -->
                     <div style="flex: 1; min-width: 250px; background: #f3e5f5; padding: 1rem; border-radius: 8px; border: 1px solid #ce93d8;">
                         <h4 style="color: var(--primary-dark); margin-bottom: 1rem;">🏢 Representación de la Empresa</h4>
-                        <div class="form-group" style="margin-bottom: 0.8rem;">
-                            <label>Representante 1 (Titular)</label>
-                            <input type="text" id="empresaRep1" name="empresaRep1" placeholder="Nombre y apellidos">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 0.8rem;">
-                            <label>Representante 2 (Suplente)</label>
-                            <input type="text" id="empresaRep2" name="empresaRep2" placeholder="Nombre y apellidos">
-                        </div>
-                        <div class="form-group">
-                            <label>Representante 3 (Opcional)</label>
-                            <input type="text" id="empresaRep3" name="empresaRep3" placeholder="Nombre y apellidos">
-                        </div>
                         
-                        <!-- Contenedor dinámico de miembros de la empresa -->
-                        <div id="empresaContenedor" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #ce93d8;"></div>
-                        
-                        <button type="button" class="btn" style="background: var(--primary-dark); width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" onclick="agregarCampoMiembro('empresaContenedor', 'empresaMiembrosExtra')">➕ Añadir otro representante</button>
+                        <!-- Aquí se inyectan los miembros de la empresa -->
+                        <div id="contenedorEmpresa"></div>
+
+                        <button type="button" class="btn" onclick="agregarMiembro('contenedorEmpresa', 'empresa')" style="background: var(--primary-dark); width: 100%; font-size: 0.85rem; margin-top: 0.5rem;">➕ Añadir representante de la empresa</button>
                     </div>
 
                     <!-- PARTE TRABAJADORA -->
                     <div style="flex: 1; min-width: 250px; background: #e8f5e9; padding: 1rem; border-radius: 8px; border: 1px solid #a5d6a7;">
                         <h4 style="color: var(--success); margin-bottom: 1rem;">👷 Representación de los Trabajadores</h4>
-                        <div class="form-group" style="margin-bottom: 0.8rem;">
-                            <label>Representante 1 (Titular)</label>
-                            <input type="text" id="trabajadoresRep1" name="trabajadoresRep1" placeholder="Nombre y apellidos">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 0.8rem;">
-                            <label>Representante 2 (Titular)</label>
-                            <input type="text" id="trabajadoresRep2" name="trabajadoresRep2" placeholder="Nombre y apellidos">
-                        </div>
-                        <div class="form-group">
-                            <label>Representante 3 (Suplente)</label>
-                            <input type="text" id="trabajadoresRep3" name="trabajadoresRep3" placeholder="Nombre y apellidos">
-                        </div>
-
-                        <!-- Contenedor dinámico de miembros de los trabajadores -->
-                        <div id="trabajadoresContenedor" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #a5d6a7;"></div>
                         
-                        <button type="button" class="btn" style="background: var(--success); width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" onclick="agregarCampoMiembro('trabajadoresContenedor', 'trabajadoresMiembrosExtra')">➕ Añadir otro representante</button>
+                        <!-- Aquí se inyectan los miembros de los trabajadores -->
+                        <div id="contenedorTrabajadores"></div>
+
+                        <button type="button" class="btn" onclick="agregarMiembro('contenedorTrabajadores', 'trabajadores')" style="background: var(--success); width: 100%; font-size: 0.85rem; margin-top: 0.5rem;">➕ Añadir representante de los trabajadores</button>
                     </div>
                 </div>
 
-                <div class="form-grid" style="margin-top: 1.5rem; background: #fafafa; padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
-                    <div class="form-group">
-                        <label>Presidente/a de la Comisión</label>
-                        <input type="text" id="comitePresidente" name="comitePresidente" placeholder="Nombre">
-                    </div>
-                    <div class="form-group">
-                        <label>Secretario/a de la Comisión</label>
-                        <input type="text" id="comiteSecretario" name="comiteSecretario" placeholder="Nombre">
-                    </div>
-                </div>
+
             </fieldset>
 
             <!-- Parámetros del plan -->

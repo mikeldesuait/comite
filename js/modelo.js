@@ -34,31 +34,19 @@ const MODELO = (() => {
     
     const lista = [];
     
-    // 1. Representantes de la Empresa (fijos)
-    if (cfg.empresaRep1) lista.push({ valor: cfg.empresaRep1, rol: 'Empresa' });
-    if (cfg.empresaRep2) lista.push({ valor: cfg.empresaRep2, rol: 'Empresa' });
-    if (cfg.empresaRep3) lista.push({ valor: cfg.empresaRep3, rol: 'Empresa' });
-
-    // 2. Representantes de los Trabajadores (fijos)
-    if (cfg.trabajadoresRep1) lista.push({ valor: cfg.trabajadoresRep1, rol: 'Trabajadores' });
-    if (cfg.trabajadoresRep2) lista.push({ valor: cfg.trabajadoresRep2, rol: 'Trabajadores' });
-    if (cfg.trabajadoresRep3) lista.push({ valor: cfg.trabajadoresRep3, rol: 'Trabajadores' });
-
-    // 3. Miembros Dinámicos (los que se añaden con el botón +)
-    if (cfg.empresaMiembrosExtra && Array.isArray(cfg.empresaMiembrosExtra)) {
-        cfg.empresaMiembrosExtra.forEach(m => {
-            lista.push({ valor: m.nombre, rol: `Empresa (${m.rol})` });
-        });
-    }
-    if (cfg.trabajadoresMiembrosExtra && Array.isArray(cfg.trabajadoresMiembrosExtra)) {
-        cfg.trabajadoresMiembrosExtra.forEach(m => {
-            lista.push({ valor: m.nombre, rol: `Trabajadores (${m.rol})` });
+    // 1. Representantes de la Empresa
+    if (cfg.empresaMiembros && Array.isArray(cfg.empresaMiembros)) {
+        cfg.empresaMiembros.forEach(m => {
+            if (m.nombre) lista.push({ valor: m.nombre, rol: m.rol, parte: 'empresa' });
         });
     }
 
-    // 4. Cargos de la Mesa (Presidente y Secretario)
-    if (cfg.comitePresidente) lista.push({ valor: cfg.comitePresidente, rol: 'Presidencia' });
-    if (cfg.comiteSecretario) lista.push({ valor: cfg.comiteSecretario, rol: 'Secretaría' });
+    // 2. Representantes de los Trabajadores
+    if (cfg.trabajadoresMiembros && Array.isArray(cfg.trabajadoresMiembros)) {
+        cfg.trabajadoresMiembros.forEach(m => {
+            if (m.nombre) lista.push({ valor: m.nombre, rol: m.rol, parte: 'trabajadores' });
+        });
+    }
     
     return lista;
   }
