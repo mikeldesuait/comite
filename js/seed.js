@@ -19,6 +19,8 @@ const SEED = {
     trabajadoresRep3: 'Luis Martínez Ortega',
     comitePresidente: 'Elena Torres Vidal',
     comiteSecretario: 'Ana García Fernández',
+    empresaMiembrosExtra: [],
+    trabajadoresMiembrosExtra: [],
     planFechaInicio: '2025-01-15',
     planFechaFin: '2028-01-14',
     planAmbito: 'nacional',

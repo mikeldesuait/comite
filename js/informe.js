@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (paso.resultado_auditoria === 'parcial' || paso.resultado_auditoria === 'no_conforme') {
             stats[paso.resultado_auditoria]++;
             hallazgosHTML += `
-                <div class="card" style="margin-bottom: 1rem; padding: 1rem;">
-                    <h4 style="color: var(--danger); margin-bottom: 0.5rem;">⚠️ Hallazgo en: ${id.toUpperCase()}</h4>
+                <div class="card" style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ccc; border-left: 4px solid #000;">
+                    <h4 style="color: #000; margin-bottom: 0.5rem;">Hallazgo en: ${id.toUpperCase()}</h4>
                     <p><strong>Problema detectado:</strong> ${paso.hallazgos || 'Sin especificar.'}</p>
                     <p><strong>Plan de acción:</strong> ${paso.plan_accion || 'Sin especificar.'}</p>
                     <p style="font-size: 0.85rem; color: #666;">Revisado por: ${paso.responsable || '—'} el ${paso.fecha_completado || '—'}</p>
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `<h3>Detalle de Hallazgos y Carencias</h3>`;
         html += hallazgosHTML;
     } else {
-        html += `<p style="color: var(--success);">✅ No se han registrado hallazgos graves en la auditoría.</p>`;
+        html += `<p style="color: #000;">✅ No se han registrado hallazgos graves en la auditoría.</p>`;
     }
 
     // 4. Medidas del Plan (Pestaña Estado)
@@ -71,11 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `
             <table style="width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem;">
                 <thead>
-                    <tr style="background: #eee; border-bottom: 2px solid #000;">
-                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #ccc;">Objetivo / Medida</th>
-                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #ccc;">Plazo</th>
-                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #ccc;">Prioridad</th>
-                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #ccc;">Responsable</th>
+                    <tr style="background: #e0e0e0; border-bottom: 2px solid #000;">
+                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #000;">Objetivo / Medida</th>
+                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #000;">Plazo</th>
+                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #000;">Prioridad</th>
+                        <th style="padding: 0.5rem; text-align: left; border: 1px solid #000;">Responsable</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -84,13 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
         medidas.forEach(m => {
             html += `
                 <tr>
-                    <td style="padding: 0.5rem; border: 1px solid #ccc;">
+                    <td style="padding: 0.5rem; border: 1px solid #000;">
                         <strong>${m.titulo}</strong><br>
                         <small><em>Indicador: ${m.indicador || '—'}</em></small>
                     </td>
-                    <td style="padding: 0.5rem; border: 1px solid #ccc;">${m.plazo ? new Date(m.plazo).toLocaleDateString('es-ES') : '—'}</td>
-                    <td style="padding: 0.5rem; border: 1px solid #ccc;">${m.prioridad}</td>
-                    <td style="padding: 0.5rem; border: 1px solid #ccc;">${m.responsable || '—'}</td>
+                    <td style="padding: 0.5rem; border: 1px solid #000;">${m.plazo ? new Date(m.plazo).toLocaleDateString('es-ES') : '—'}</td>
+                    <td style="padding: 0.5rem; border: 1px solid #000;">${m.prioridad}</td>
+                    <td style="padding: 0.5rem; border: 1px solid #000;">${m.responsable || '—'}</td>
                 </tr>
             `;
         });

@@ -209,10 +209,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 hayHallazgos = true;
                 const estadoTxt = paso.resultado_auditoria === 'parcial' ? '⚠️ PARCIAL' : '❌ NO CONFORME';
                 hallazgosHTML += `
-                    <div style="background: #fff5f5; border-left: 4px solid #c62828; padding: 0.8rem; margin-bottom: 0.8rem;">
-                        <p><strong>${nombrePaso(pasoId)} - ${estadoTxt}</strong></p>
-                        <p><strong>Hallazgo:</strong> ${paso.hallazgos || 'Pendiente de definir'}</p>
-                        <p><strong>Petición:</strong> ${paso.plan_accion || 'Pendiente de definir'}</p>
+                    <div class="hallazgo">
+                        <p style="margin: 0 0 5px 0;"><strong>${nombrePaso(pasoId)} - ${estadoTxt}</strong></p>
+                        <p style="margin: 0 0 5px 0;"><strong>Hallazgo:</strong> ${paso.hallazgos || 'Pendiente de definir'}</p>
+                        <p style="margin: 0;"><strong>Petición de la Comisión:</strong> ${paso.plan_accion || 'Pendiente de definir'}</p>
                     </div>
                 `;
             }
@@ -259,9 +259,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <style>
                     body { font-family: sans-serif; padding: 2rem; color: #000; line-height: 1.5; }
                     h1, h2 { text-align: center; }
-                    .seccion { margin-top: 1.5rem; }
-                    .seccion h3 { background: #eee; padding: 0.3rem; border-left: 4px solid #000; margin-bottom: 0.5rem; }
-                    .hallazgo { page-break-inside: avoid; }
+                    .seccion { margin-top: 1.5rem; page-break-inside: avoid; }
+                    .seccion h3 { background: #f4f4f4; color: #000; padding: 0.5rem; border-bottom: 2px solid #000; margin-bottom: 0.8rem; text-transform: uppercase; font-size: 14px; }
+                    .hallazgo { page-break-inside: avoid; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; }
                     .firmas { margin-top: 4rem; display: flex; justify-content: space-between; text-align: center; }
                     @media print { .no-print { display: none !important; } }
                     @media print { body { padding: 0; } }
@@ -328,9 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 ${r.advertencia ? `
-                <div class="seccion" style="border: 2px solid #c62828; padding: 1rem; background: #fff5f5;">
-                    <h4 style="color: #c62828; margin-top:0;">ADVERTENCIA LEGAL</h4>
-                    <p>Se deja constancia expresa de que la Comisión Negociadora ha solicitado a la Dirección la documentación detallada, no habiendo sido entregada en su totalidad hasta la fecha. Se advierte a la Empresa de su obligación legal conforme al RD 901/2020. La persistencia obligará a la Comisión a poner los hechos en conocimiento de la Inspección de Trabajo.</p>
+                <div class="seccion" style="border: 2px solid #000; padding: 1rem; page-break-inside: avoid;">
+                    <h4 style="margin-top:0; text-transform: uppercase;">Advertencia Legal y Constancia de Incumplimiento</h4>
+                    <p style="margin: 0;">Se deja constancia expresa de que la Comisión Negociadora ha solicitado a la Dirección la documentación detallada, no habiendo sido entregada en su totalidad hasta la fecha. Se advierte a la Empresa de su obligación legal conforme al RD 901/2020. La persistencia obligará a la Comisión a poner los hechos en conocimiento de la Inspección de Trabajo.</p>
                 </div>
                 ` : ''}
 

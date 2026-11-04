@@ -43,6 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="cumplimiento.html" class="${activePasos}">Pasos del Plan</a>
         <a href="estado.html" class="${activeEstado}">Estado</a>
         <a href="configuracion.html" class="${activeConfig}">Configuración</a>
-        <a href="guia.html" class="${activeGuia}" style="color: #ffb74d;">💡 Guía</a>
+        <a href="guia.html" class="${activeGuia}" style="color: #ffb74d;">💡&nbsp;Guía</a>
     `;
 });

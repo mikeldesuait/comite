@@ -102,6 +102,11 @@
                             <label>Representante 3 (Opcional)</label>
                             <input type="text" id="empresaRep3" name="empresaRep3" placeholder="Nombre y apellidos">
                         </div>
+                        
+                        <!-- Contenedor dinámico de miembros de la empresa -->
+                        <div id="empresaContenedor" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #ce93d8;"></div>
+                        
+                        <button type="button" class="btn" style="background: var(--primary-dark); width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" onclick="agregarCampoMiembro('empresaContenedor', 'empresaMiembrosExtra')">➕ Añadir otro representante</button>
                     </div>
 
                     <!-- PARTE TRABAJADORA -->
@@ -119,6 +124,11 @@
                             <label>Representante 3 (Suplente)</label>
                             <input type="text" id="trabajadoresRep3" name="trabajadoresRep3" placeholder="Nombre y apellidos">
                         </div>
+
+                        <!-- Contenedor dinámico de miembros de los trabajadores -->
+                        <div id="trabajadoresContenedor" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #a5d6a7;"></div>
+                        
+                        <button type="button" class="btn" style="background: var(--success); width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" onclick="agregarCampoMiembro('trabajadoresContenedor', 'trabajadoresMiembrosExtra')">➕ Añadir otro representante</button>
                     </div>
                 </div>
 

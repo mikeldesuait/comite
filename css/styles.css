@@ -489,3 +489,22 @@ input[type="file"] {
         font-weight: bold;
     }
 }
+
+/* Arreglo para que el menú no se rompa en varias líneas */
+#mainNav {
+    display: flex;
+    flex-wrap: nowrap; /* Prohíbe que los enlaces bajen a la siguiente línea */
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#mainNav a {
+    white-space: nowrap; /* Obliga a que el texto del enlace no se parta */
+}
+
+/* El enlace de la Guía lo unimos para que el emoji no se separe del texto */
+#mainNav a[href="guia.html"] {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
