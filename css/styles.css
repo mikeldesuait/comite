@@ -508,3 +508,31 @@ input[type="file"] {
     align-items: center;
     gap: 4px;
 }
+
+/* ===== ARREGLO PARA TABLETS (Evitar que el menú bloquee los toques) ===== */
+
+/* Aseguramos que los botones estén siempre por encima */
+button, .btn {
+    position: relative;
+    z-index: 10;
+    touch-action: manipulation; /* Mejora la respuesta al toque en móviles */
+}
+
+/* En pantallas táctiles, aseguramos que el contenedor del formulario tenga su propio contexto */
+.config-form fieldset {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hacemos el botón de "Añadir representante" más grande y fácil de pulsar en pantallas táctiles */
+@media (max-width: 1024px) {
+    .btn {
+        padding: 0.8rem 1.2rem; /* Botones más altos en tablet */
+        font-size: 1rem;
+    }
+    
+    /* Si el menú móvil está abierto, que no tape los botones de abajo */
+    .nav-container.show-mobile {
+        z-index: 999;
+    }
+}

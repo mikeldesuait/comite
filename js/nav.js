@@ -7,12 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Control del menú hamburguesa en móviles
     if (btnMenu && navContainer) {
-        btnMenu.addEventListener('click', () => {
+        btnMenu.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic se propague
             navContainer.classList.toggle('show-mobile');
             // Cambiar icono
             if (navContainer.classList.contains('show-mobile')) {
                 btnMenu.innerHTML = '✕';
             } else {
+                btnMenu.innerHTML = '☰';
+            }
+        });
+
+        // Cerrar el menú al hacer clic fuera de él
+        document.addEventListener('click', (e) => {
+            if (navContainer.classList.contains('show-mobile') && !navContainer.contains(e.target) && e.target !== btnMenu) {
+                navContainer.classList.remove('show-mobile');
                 btnMenu.innerHTML = '☰';
             }
         });
