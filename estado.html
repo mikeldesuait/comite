@@ -9,17 +9,29 @@
 <body>
     <header class="main-header">
         <div class="header-container">
-            <h1>📋 Gestor de Plan de Igualdad</h1>
-            <div class="demo-badge" id="demoBadge" style="display:none;">
-                🎭 Modo DEMO
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap: wrap;">
+                <h1>📋 Gestor de Plan de Igualdad</h1>
+                
+                <!-- Botón hamburguesa (solo móvil) -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">☰</button>
             </div>
-            <div class="user-selector" id="userSelector">
-                <span class="user-label">👤 Trabajando como:</span>
-                <select id="usuarioActualSelect">
-                    <option value="">— Selecciona —</option>
-                </select>
+
+            <!-- Contenedor de la navegación que se colapsa en móvil -->
+            <div class="nav-container" id="navContainer">
+                <div class="header-tools">
+                    <div class="demo-badge" id="demoBadge" style="display:none;" title="Los datos actuales son de ejemplo. Se quitará al guardar datos propios.">
+                        🎭 Modo DEMO
+                    </div>
+                    <div class="user-selector" id="userSelector">
+                        <span class="user-label">👤 Trabajando como:</span>
+                        <select id="usuarioActualSelect" title="Selecciona quién está trabajando">
+                            <option value="">— Selecciona —</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <nav id="mainNav"></nav>
             </div>
-            <nav id="mainNav"></nav>
         </div>
     </header>
 

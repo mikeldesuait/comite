@@ -1,9 +1,26 @@
-// nav.js - Genera la barra de navegación unificada
+// nav.js - Genera la barra de navegación unificada y controla el menú móvil
 
 document.addEventListener('DOMContentLoaded', () => {
     const nav = document.getElementById('mainNav');
+    const btnMenu = document.getElementById('mobileMenuBtn');
+    const navContainer = document.getElementById('navContainer');
+
+    // 1. Control del menú hamburguesa en móviles
+    if (btnMenu && navContainer) {
+        btnMenu.addEventListener('click', () => {
+            navContainer.classList.toggle('show-mobile');
+            // Cambiar icono
+            if (navContainer.classList.contains('show-mobile')) {
+                btnMenu.innerHTML = '✕';
+            } else {
+                btnMenu.innerHTML = '☰';
+            }
+        });
+    }
+
     if (!nav) return;
 
+    // 2. Pintar los enlaces del menú (detectando la página actual)
     const path = window.location.pathname.split('/').pop() || 'index.html';
     
     let activeIndex = '';

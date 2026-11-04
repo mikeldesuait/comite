@@ -389,3 +389,103 @@ input[type="file"] {
     from { opacity: 1; }
     to { opacity: 0; }
 }
+
+/* ===== DISEÑO RESPONSIVE (Móviles y Tablets) ===== */
+
+/* Ocultar botón hamburguesa en ordenadores */
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+/* Estilos base para el contenedor de navegación */
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.5rem;
+    gap: 1rem;
+}
+
+.header-tools {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* --- Cambios para pantallas pequeñas (Móviles y Tablets) --- */
+@media (max-width: 900px) {
+    .header-container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+    
+    .mobile-menu-btn {
+        display: block; /* Mostramos la hamburguesa */
+    }
+
+    /* Ocultamos el menú por defecto */
+    .nav-container {
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        background: rgba(0,0,0,0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    /* Clase que activa JS para mostrar el menú */
+    .nav-container.show-mobile {
+        display: flex;
+    }
+
+    .header-tools {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .user-selector {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .user-selector select {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    /* El menú de enlaces se pone en vertical */
+    #mainNav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    #mainNav a {
+        margin: 0;
+        padding: 0.8rem;
+        width: 100%;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+    }
+
+    #mainNav a.active {
+        background: rgba(255,255,255,0.3);
+        font-weight: bold;
+    }
+}
