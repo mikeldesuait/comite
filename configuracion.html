@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Plan de Igualdad</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>📋 Gestor de Plan de Igualdad</h1>
+            <div class="demo-badge" id="demoBadge" style="display:none;" title="Los datos actuales son de ejemplo. Se quitará al guardar datos propios.">
+                🎭 Modo DEMO
+            </div>
+            <div class="user-selector" id="userSelector">
+                <span class="user-label">👤 Trabajando como:</span>
+                <select id="usuarioActualSelect" title="Selecciona quién está trabajando">
+                    <option value="">— Selecciona —</option>
+                </select>
+            </div>
+
+            <nav id="mainNav"></nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-title">
+            <h2>⚙️ Configuración del Plan</h2>
+            <p>Introduce los datos de tu empresa para comenzar.</p>
+        </section>
+
+        <form id="configForm" class="config-form">
+            <!-- Datos de la empresa -->
+            <fieldset>
+                <legend>🏢 Datos de la Empresa</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="empresaNombre">Nombre de la empresa *</label>
+                        <input type="text" id="empresaNombre" name="empresaNombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaCif">CIF / NIF *</label>
+                        <input type="text" id="empresaCif" name="empresaCif" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaDireccion">Dirección</label>
+                        <input type="text" id="empresaDireccion" name="empresaDireccion">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaCiudad">Ciudad</label>
+                        <input type="text" id="empresaCiudad" name="empresaCiudad">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaCp">Código Postal</label>
+                        <input type="text" id="empresaCp" name="empresaCp">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaSector">Sector de actividad</label>
+                        <input type="text" id="empresaSector" name="empresaSector">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaEmpleados">Nº de empleados/as</label>
+                        <input type="number" id="empresaEmpleados" name="empresaEmpleados" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="empresaRepresentante">Representante legal</label>
+                        <input type="text" id="empresaRepresentante" name="empresaRepresentante">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Comité de igualdad -->
+            <fieldset>
+                <legend>👥 Comisión Negociadora (Paritaria)</legend>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">La comisión debe estar formada por representantes de la empresa y de los trabajadores de forma equilibrada.</p>
+                
+                <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+                    <!-- PARTE EMPRESA -->
+                    <div style="flex: 1; min-width: 250px; background: #f3e5f5; padding: 1rem; border-radius: 8px; border: 1px solid #ce93d8;">
+                        <h4 style="color: var(--primary-dark); margin-bottom: 1rem;">🏢 Representación de la Empresa</h4>
+                        <div class="form-group" style="margin-bottom: 0.8rem;">
+                            <label>Representante 1 (Titular)</label>
+                            <input type="text" id="empresaRep1" name="empresaRep1" placeholder="Nombre y apellidos">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0.8rem;">
+                            <label>Representante 2 (Suplente)</label>
+                            <input type="text" id="empresaRep2" name="empresaRep2" placeholder="Nombre y apellidos">
+                        </div>
+                        <div class="form-group">
+                            <label>Representante 3 (Opcional)</label>
+                            <input type="text" id="empresaRep3" name="empresaRep3" placeholder="Nombre y apellidos">
+                        </div>
+                    </div>
+
+                    <!-- PARTE TRABAJADORA -->
+                    <div style="flex: 1; min-width: 250px; background: #e8f5e9; padding: 1rem; border-radius: 8px; border: 1px solid #a5d6a7;">
+                        <h4 style="color: var(--success); margin-bottom: 1rem;">👷 Representación de los Trabajadores</h4>
+                        <div class="form-group" style="margin-bottom: 0.8rem;">
+                            <label>Representante 1 (Titular)</label>
+                            <input type="text" id="trabajadoresRep1" name="trabajadoresRep1" placeholder="Nombre y apellidos">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0.8rem;">
+                            <label>Representante 2 (Titular)</label>
+                            <input type="text" id="trabajadoresRep2" name="trabajadoresRep2" placeholder="Nombre y apellidos">
+                        </div>
+                        <div class="form-group">
+                            <label>Representante 3 (Suplente)</label>
+                            <input type="text" id="trabajadoresRep3" name="trabajadoresRep3" placeholder="Nombre y apellidos">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-top: 1.5rem; background: #fafafa; padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <div class="form-group">
+                        <label>Presidente/a de la Comisión</label>
+                        <input type="text" id="comitePresidente" name="comitePresidente" placeholder="Nombre">
+                    </div>
+                    <div class="form-group">
+                        <label>Secretario/a de la Comisión</label>
+                        <input type="text" id="comiteSecretario" name="comiteSecretario" placeholder="Nombre">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Parámetros del plan -->
+            <fieldset>
+                <legend>📅 Parámetros del Plan</legend>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="planFechaInicio">Fecha de inicio</label>
+                        <input type="date" id="planFechaInicio" name="planFechaInicio">
+                    </div>
+                    <div class="form-group">
+                        <label for="planFechaFin">Fecha de fin</label>
+                        <input type="date" id="planFechaFin" name="planFechaFin">
+                    </div>
+                    <div class="form-group">
+                        <label for="planAmbito">Ámbito de aplicación</label>
+                        <select id="planAmbito" name="planAmbito">
+                            <option value="nacional">Nacional</option>
+                            <option value="autonomico">Autonómico</option>
+                            <option value="provincial">Provincial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="planEstado">Estado del plan</label>
+                        <select id="planEstado" name="planEstado">
+                            <option value="borrador">Borrador</option>
+                            <option value="negociacion">En negociación</option>
+                            <option value="aprobado">Aprobado</option>
+                            <option value="registrado">Registrado</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- Acciones -->
+            <div class="form-actions" style="flex-wrap:wrap; gap:0.75rem; align-items:center;">
+                <button type="submit" class="btn btn-primary">💾 Guardar configuración</button>
+                <button type="button" id="btnReset" class="btn btn-danger">🗑️ Limpiar datos</button>
+                <span style="flex:1;"></span>
+                <button type="button" id="btnCargarEjemplo" class="btn" style="background:var(--secondary);" title="Rellena todos los formularios con datos de ejemplo">🎭 Cargar ejemplo completo</button>
+                <button type="button" id="btnVaciarTodo" class="btn btn-danger" title="Borra todos los datos de la app">🧨 Vaciar todo</button>
+            </div>
+        </form>
+
+        <div id="statusMessage" class="status-message"></div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Gestor de Plan de Igualdad</p>
+    </footer>
+
+    <script src="js/cumplimiento.js"></script>
+    <script src="js/configuracion.js"></script>
+    <script src="js/modelo.js"></script>
+    <script src="js/usuario-selector.js"></script>
+    <script src="js/seed.js"></script>
+    <script src="js/seed-loader.js"></script>
+    <script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Igualdad - Gestor</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>📋 Gestor de Plan de Igualdad</h1>
+            <div class="demo-badge" id="demoBadge" style="display:none;" title="Los datos actuales son de ejemplo. Se quitará al guardar datos propios.">
+                🎭 Modo DEMO
+            </div>
+            <div class="user-selector" id="userSelector">
+                <span class="user-label">👤 Trabajando como:</span>
+                <select id="usuarioActualSelect" title="Selecciona quién está trabajando">
+                    <option value="">— Selecciona —</option>
+                </select>
+            </div>
+
+            <nav id="mainNav"></nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h2>Bienvenido al Gestor de Planes de Igualdad</h2>
+            <p>Audita, define medidas y genera el documento final de tu Plan de Igualdad.</p>
+        </section>
+
+        <section class="cards">
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <h3>Reuniones</h3>
+                <p>Registra las actas, asistentes y acuerdos de la comisión.</p>
+                <a href="reuniones.html" class="btn">Ver Reuniones</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Pasos del Plan</h3>
+                <p>Auditoría normativa y recogida de datos (Diagnóstico).</p>
+                <a href="cumplimiento.html" class="btn">Ir a los pasos</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📈</div>
+                <h3>Estado (Medidas)</h3>
+                <p>Define objetivos y acciones correctoras del plan.</p>
+                <a href="estado.html" class="btn">Ver estado</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📄</div>
+                <h3>Documentos y Exportación</h3>
+                <p>Genera los informes oficiales y descarga el progreso.</p>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+                    <a href="informe.html" target="_blank" class="btn" style="background:var(--secondary);">📄 Generar Informe Final (PDF)</a>
+                    <a href="peticion.html" target="_blank" class="btn" style="background:#1976d2;">📋 Petición de Datos (Empresa)</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Gestor de Plan de Igualdad</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/modelo.js"></script>
+    <script src="js/usuario-selector.js"></script>
+    <script src="js/seed.js"></script>
+    <script src="js/seed-loader.js"></script>
+    <script src="js/nav.js"></script>
+</body>
+</html>

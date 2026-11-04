@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Petición de Datos - Plan de Igualdad</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        @media print {
+            body { background: #fff; font-size: 12px; color: #000; }
+            .no-print { display: none !important; }
+            .container { max-width: 100%; padding: 0; }
+            .fase-bloque { page-break-inside: avoid; margin-bottom: 1.5rem; }
+            h1, h2, h3 { color: #000 !important; }
+        }
+        .fase-bloque { margin-bottom: 2rem; }
+        .fase-bloque h3 { background: var(--primary); color: #fff; padding: 0.5rem; border-radius: 4px; -webkit-print-color-adjust: exact; }
+        .paso-peticion { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dashed #ccc; }
+        .cuadro-check { width: 20px; height: 20px; border: 2px solid #000; display: inline-block; flex-shrink: 0; margin-top: 3px; }
+        .texto-peticion strong { display: block; font-size: 1.05rem; }
+        .texto-peticion small { color: #555; display: block; margin-top: 4px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container" style="margin-top: 2rem; margin-bottom: 2rem;">
+        
+        <div class="no-print" style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+            <a href="cumplimiento.html" class="btn" style="background: #757575;">⬅️ Volver a Pasos</a>
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir / Guardar como PDF</button>
+        </div>
+
+        <div id="contenidoPeticion">
+            <!-- Se llena con JS -->
+        </div>
+
+    </div>
+
+    <script src="js/modelo.js"></script>
+    <script src="js/peticion.js"></script>
+</body>
+</html>

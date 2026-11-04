@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Uso - Plan de Igualdad</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .guia-step { display: flex; gap: 1.5rem; margin-bottom: 2rem; align-items: flex-start; }
+        .guia-num { background: var(--primary); color: #fff; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; flex-shrink: 0; }
+        .guia-content { flex: 1; }
+        .guia-content h3 { color: var(--primary-dark); margin-bottom: 0.5rem; }
+        .guia-box { padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
+        .box-danger { background: #ffebee; border-left: 4px solid var(--danger); }
+        .box-info { background: #e3f2fd; border-left: 4px solid #1976d2; }
+        .box-success { background: #e8f5e9; border-left: 4px solid var(--success); }
+        .guia-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .guia-card { background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .guia-card h4 { color: var(--primary); margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>📋 Gestor de Plan de Igualdad</h1>
+            <div class="demo-badge" id="demoBadge" style="display:none;">🎭 Modo DEMO</div>
+            <div class="user-selector" id="userSelector">
+                <span class="user-label">👤 Trabajando como:</span>
+                <select id="usuarioActualSelect"><option value="">— Selecciona —</option></select>
+            </div>
+            <nav id="mainNav"></nav>
+        </div>
+    </header>
+
+    <main class="container" style="max-width: 900px;">
+        <section class="page-title" style="text-align: center; margin-bottom: 3rem;">
+            <h2>📖 Guía de Uso para la Comisión</h2>
+            <p>Cómo funciona la herramienta, cómo se guardan los datos y el flujo de trabajo recomendado.</p>
+        </section>
+
+        <!-- Alerta de Privacidad -->
+        <div class="guia-box box-info">
+            <h3 style="margin-top:0; color: #1565c0;">🔒 Privacidad y Almacenamiento Local</h3>
+            <p>Esta aplicación web no tiene servidor ni base de datos en la nube. <strong>Toda la información que introduzcáis se guarda única y exclusivamente en el navegador del ordenador donde la estáis usando (almacenamiento local / localStorage).</strong></p>
+            <p>Esto significa que:</p>
+            <ul>
+                <li>Si abres la web en tu casa, no verás los datos que guardó tu compañero en la oficina.</li>
+                <li>Si borras la caché de tu navegador, podrías perder los datos.</li>
+                <li>Nadie de fuera (ni siquiera quien aloja la web en GitHub) tiene acceso a vuestra información.</li>
+            </ul>
+        </div>
+
+        <!-- Flujo de trabajo -->
+        <h2 style="border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; margin-top: 3rem;">🗺️ El Flujo de Trabajo (Paso a Paso)</h2>
+        
+        <div style="margin-top: 2rem;">
+            <div class="guia-step">
+                <div class="guia-num">1</div>
+                <div class="guia-content">
+                    <h3>Configurar la Empresa</h3>
+                    <p>Lo primero es ir a la pestaña <strong>Configuración</strong>. Rellena los datos de la empresa, los representantes legales y los nombres de los miembros de vuestro comité. <em>(Los nombres del comité son fundamentales para que aparezcan en los desplegables de asistencia a reuniones).</em></p>
+                </div>
+            </div>
+
+            <div class="guia-step">
+                <div class="guia-num">2</div>
+                <div class="guia-content">
+                    <h3>Crear la Primera Reunión</h3>
+                    <p>Ve a la pestaña <strong>Reuniones</strong> y crea la reunión de constitución. Apunta quién vino (presencial o telemático) y qué acordasteis. Podrás imprimir el acta oficial en PDF para que la firme la empresa.</p>
+                </div>
+            </div>
+
+            <div class="guia-step">
+                <div class="guia-num">3</div>
+                <div class="guia-content">
+                    <h3>Auditar los Pasos del Plan</h3>
+                    <p>Ve a <strong>Pasos del Plan</strong>. Despliega cada fase y abre las fichas. Aquí debes evaluar a la empresa: si te han entregado el documento, pon el semáforo en verde (Conforme). Si falta algo, ponlo en amarillo/rojo (Parcial/No Conforme) y apunta los Hallazgos.</p>
+                </div>
+            </div>
+
+            <div class="guia-step">
+                <div class="guia-num">4</div>
+                <div class="guia-content">
+                    <h3>Pedir Datos y Reclamar</h3>
+                    <p>Al final de la página de Pasos, tienes el botón azul <strong>📋 Petición de Datos (Empresa)</strong>. Genera un PDF con todo lo que le tenéis que pedir a la empresa para la próxima reunión. Cuando os reúnan de nuevo, usad el acta para dejar constancia de lo que la empresa no os ha entregado.</p>
+                </div>
+            </div>
+
+            <div class="guia-step">
+                <div class="guia-num">5</div>
+                <div class="guia-content">
+                    <h3>Definir las Medidas</h3>
+                    <p>Una vez sepáis qué falla, ve a la pestaña <strong>Estado</strong> y pulsa "Nueva Medida". Cread acciones concretas con plazo y presupuesto para arreglar los problemas.</p>
+                </div>
+            </div>
+
+            <div class="guia-step">
+                <div class="guia-num">6</div>
+                <div class="guia-content">
+                    <h3>Exportar el Informe Final</h3>
+                    <p>Cuando todo esté revisado, usa el botón naranja <strong>Generar Informe (PDF)</strong>. Obtendrás un documento limpio con todas las medidas y hallazgos listo para firmar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerta de Seguridad (Backup) -->
+        <div class="guia-box box-danger" style="margin-top: 3rem;">
+            <h3 style="margin-top:0; color: #c62828;">🚨 ¡MUY IMPORTANTE! Hacer Copia de Seguridad tras cada reunión</h3>
+            <p>Como los datos viven en el navegador, si alguien limpia la caché por error, se cambiaría de ordenador o se reinstala Windows, <strong>los datos se perderían para siempre</strong>.</p>
+            <p>Para evitarlo, al terminar cada sesión de trabajo (y especialmente tras cada reunión del comité), seguid estos pasos:</p>
+            <ol style="margin-top: 0.5rem; margin-bottom: 1rem;">
+                <li>Id a la pestaña <strong>Pasos del Plan</strong>.</li>
+                <li>Pulsad el botón verde <strong>💾 Descargar Copia de Seguridad Total</strong>.</li>
+                <li>Se descargará un archivo llamado <code>.json</code>. Guardadlo en la carpeta compartida del comité (OneDrive, Drive, etc).</li>
+            </ol>
+            <p><strong>¿Cómo recupero los datos si algo falla?</strong> Solo tenéis que abrir la web en el ordenador nuevo o tras el fallo, ir a Pasos del Plan, pulsar <strong>📂 Restaurar Copia de Seguridad</strong> y subir ese archivo <code>.json</code>.</p>
+        </div>
+
+        <!-- Preguntas frecuentes -->
+        <h2 style="border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; margin-top: 3rem;">❓ Preguntas Frecuentes</h2>
+        
+        <div class="guia-grid" style="margin-top: 1.5rem;">
+            <div class="guia-card">
+                <h4>¿Los archivos PDF (actas) se suben a la nube?</h4>
+                <p>No. Los archivos que adjuntas en las fichas de auditoría se guardan en una memoria interna de tu navegador. Para que otros compañeros vean esos archivos, debes compartirlos por Teams/Correo o tenerlos en la carpeta compartida.</p>
+            </div>
+            <div class="guia-card">
+                <h4>¿Se puede trabajar en equipo simultáneamente?</h4>
+                <p>No en tiempo real. Cada uno tiene su propio "cerebro" local. La forma de trabajar juntos es: tú rellenas la app, descargas el JSON, y le pasas ese JSON a tu compañero para que lo importe en su ordenador.</p>
+            </div>
+            <div class="guia-card">
+                <h4>¿Para qué sirve el "Modo DEMO"?</h4>
+                <p>Para que puedas probar la aplicación sin meter datos reales. Si pulsas "Vaciar todo" en Configuración, borras el ejemplo y empiezas de cero con tu empresa real.</p>
+            </div>
+            <div class="guia-card">
+                <h4>¿Qué son los semáforos de auditoría?</h4>
+                <p>Son el resultado de vuestra evaluación: Conforme (todo bien), Parcial (falta algo) o No Conforme (no se ha hecho). Esto es lo que luego la empresa tiene que leer en el Acta de Seguimiento.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Gestor de Plan de Igualdad</p>
+    </footer>
+
+    <script src="js/modelo.js"></script>
+    <script src="js/seed.js"></script>
+    <script src="js/seed-loader.js"></script>
+    <script src="js/usuario-selector.js"></script>
+    <script src="js/nav.js"></script>
+</body>
+</html>

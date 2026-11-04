@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reuniones - Plan de Igualdad</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <h1>📋 Gestor de Plan de Igualdad</h1>
+            <div class="demo-badge" id="demoBadge" style="display:none;">
+                🎭 Modo DEMO
+            </div>
+            <div class="user-selector" id="userSelector">
+                <span class="user-label">👤 Trabajando como:</span>
+                <select id="usuarioActualSelect">
+                    <option value="">— Selecciona —</option>
+                </select>
+            </div>
+            <nav id="mainNav"></nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-title" style="display:flex; justify-content:space-between; align-items:flex-end;">
+            <div>
+                <h2>📅 Libro de Reuniones y Actas</h2>
+                <p>Registra las reuniones de la Comisión Negociadora y deja constancia de los acuerdos.</p>
+            </div>
+            <button type="button" class="btn btn-primary" id="btnNuevaReunion">➕ Nueva Reunión</button>
+        </section>
+
+        <div id="listaReuniones" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Aquí se listan las reuniones guardadas -->
+        </div>
+
+        <!-- Modal para crear/editar reunión -->
+        <div id="modalReunion" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; overflow-y: auto; padding: 2rem;">
+            <div style="background:#fff; padding:2rem; border-radius:12px; width:100%; max-width:800px; box-shadow:var(--shadow); margin: auto;">
+                <h3 style="margin-bottom:1.5rem; color:var(--primary-dark);" id="modalTitulo">Nueva Reunión</h3>
+                
+                <form id="formReunion">
+                    <input type="hidden" id="reunionId">
+                    
+                    <div class="form-grid" style="margin-bottom:1rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div class="form-group">
+                            <label>Fecha *</label>
+                            <input type="date" id="reunionFecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hora de inicio</label>
+                            <input type="time" id="reunionHora">
+                        </div>
+                        <div class="form-group">
+                            <label>Modalidad</label>
+                            <select id="reunionModalidad">
+                                <option value="Presencial">Presencial</option>
+                                <option value="Telemática">Telemática</option>
+                                <option value="Mixta (Presencial y Telemática)">Mixta</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Lugar / Enlace de conexión</label>
+                        <input type="text" id="reunionLugar" placeholder="Ej: Sala de Juntas o enlace de Teams/Zoom">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Asistencia de los miembros del Comité</label>
+                        <div id="listaAsistentes" style="background: #f9f9f9; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.8rem;">
+                            <!-- JS inyecta aquí los miembros -->
+                        </div>
+                    </div>
+
+                    <!-- Campo oculto para guardar el texto final de asistentes -->
+                    <input type="hidden" id="reunionAsistentes">
+
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Orden del Día / Temas tratados</label>
+                        <textarea id="reunionTemas" rows="3" style="padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; font-family:inherit; width:100%;" placeholder="1. Lectura del acta anterior&#10;2. Revisión de los datos..."></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:1rem;">
+                        <label>Acuerdos alcanzados</label>
+                        <textarea id="reunionAcuerdos" rows="3" style="padding:0.55rem 0.7rem; border:1px solid var(--border); border-radius:8px; font-family:inherit; width:100%;" placeholder="Se acuerda que la empresa entregará..."></textarea>
+                    </div>
+
+                    <div class="form-grid" style="margin-bottom:1.5rem;">
+                        <div class="form-group">
+                            <label>Fecha de la próxima reunión (opcional)</label>
+                            <input type="date" id="reunionProxima">
+                        </div>
+                        <div class="form-group" style="display:flex; align-items:center; gap:10px; padding-top:1.5rem;">
+                            <input type="checkbox" id="reunionAdvertencia" style="width:20px; height:20px;">
+                            <label for="reunionAdvertencia" style="margin:0; color:var(--danger); font-weight:600;">Incluir advertencia legal (Incumplimiento)</label>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:flex-end; gap:1rem;">
+                        <button type="button" class="btn btn-danger" id="btnCancelarReunion" style="background:#ccc;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">💾 Guardar Reunión</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 Gestor de Plan de Igualdad</p>
+    </footer>
+
+    <script src="js/archivos-db.js"></script>
+    <script src="js/modelo.js"></script>
+    <script src="js/seed.js"></script>
+    <script src="js/seed-loader.js"></script>
+    <script src="js/usuario-selector.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/reuniones.js"></script>
+    <script src="js/toast.js"></script>
+</body>
+</html>
