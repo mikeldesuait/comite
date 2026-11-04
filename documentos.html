@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Documentos - Plan de Igualdad</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap: wrap;">
+                <h1>📋 Gestor de Plan de Igualdad</h1>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">☰</button>
+            </div>
+            <div class="nav-container" id="navContainer">
+                <div class="header-tools">
+                    <div class="demo-badge" id="demoBadge" style="display:none;">🎭 Modo DEMO</div>
+                    <div class="user-selector" id="userSelector">
+                        <span class="user-label">👤 Trabajando como:</span>
+                        <select id="usuarioActualSelect"><option value="">— Selecciona —</option></select>
+                    </div>
+                </div>
+                <nav id="mainNav"></nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-title" style="text-align: center; margin-bottom: 3rem;">
+            <h2>📂 Centro de Documentos</h2>
+            <p>Genera los informes oficiales del Plan de Igualdad y solicita documentación a la empresa.</p>
+        </section>
+
+        <div class="cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+            
+            <!-- Tarjeta 1: Informe Final -->
+            <div class="card" style="display: flex; flex-direction: column; text-align: left; padding: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📄</div>
+                <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Informe Final del Plan</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem; flex: 1; margin-bottom: 1.5rem;">
+                    Genera un documento PDF con el resumen de la auditoría, los hallazgos detectados y la tabla de medidas correctoras. Ideal para llevar a la mesa de negociación o firmar.
+                </p>
+                <a href="informe.html" target="_blank" class="btn btn-primary" style="width: 100%;">Generar Informe (PDF)</a>
+            </div>
+
+            <!-- Tarjeta 2: Petición de Datos -->
+            <div class="card" style="display: flex; flex-direction: column; text-align: left; padding: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">📋</div>
+                <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Petición de Datos</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem; flex: 1; margin-bottom: 1.5rem;">
+                    Genera un documento formal dirigido a la Dirección/RRHH con todas las evidencias que necesitáis que os entreguen, ordenadas por fases. Incluye cláusula de acuse de recibo por email.
+                </p>
+                <a href="peticion.html" target="_blank" class="btn" style="background: #1976d2; width: 100%;">Solicitar a la Empresa (PDF)</a>
+            </div>
+
+            <!-- Tarjeta 3: Checklist de Auditoría (Nueva) -->
+            <div class="card" style="display: flex; flex-direction: column; text-align: left; padding: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">✅</div>
+                <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Checklist Normativo Completo</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem; flex: 1; margin-bottom: 1.5rem;">
+                    Descarga el listado completo de los 24 pasos exigidos por el RD 901/2020 y el RD 902/2020, con sus referencias legales y el estado actual de vuestra auditoría.
+                </p>
+                <button onclick="window.generarChecklistPDF()" class="btn" style="background: var(--secondary); width: 100%;">Descargar Checklist (PDF)</button>
+            </div>
+
+            <!-- Tarjeta 4: Copia de Seguridad (Atajo) -->
+            <div class="card" style="display: flex; flex-direction: column; text-align: left; padding: 2rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">💾</div>
+                <h3 style="color: var(--primary-dark); margin-bottom: 0.5rem;">Copia de Seguridad de Datos</h3>
+                <p style="color: var(--text-light); font-size: 0.9rem; flex: 1; margin-bottom: 1.5rem;">
+                    Descarga un archivo `.json` con absolutamente todos los datos de la aplicación (actas, medidas, auditoría y configuración) para guardarlo a salvo.
+                </p>
+                <button onclick="window.descargarBackupTotal()" class="btn" style="background: var(--success); width: 100%;">Descargar Backup (.json)</button>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="main-footer" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; padding: 1rem 2rem;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <p style="margin:0;">&copy; 2026 Gestor de Plan de Igualdad</p>
+            <span style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; color: rgba(255,255,255,0.5);" title="Versión de la aplicación">Versión 1.1</span>
+        </div>
+        <a href="#" onclick="event.preventDefault(); document.getElementById('modalPrivacidad').style.display='flex';" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:0.85rem; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">🔒 Aviso de Privacidad (Sin Cookies)</a>
+    </footer>
+
+    <!-- Modal Aviso Legal (Reutilizado) -->
+    <div id="modalPrivacidad" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding: 1rem;">
+        <div style="background:#fff; max-width:750px; width:100%; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y:auto; padding: 2rem;">
+            <h3 style="color: var(--primary-dark); margin-bottom: 1rem;">⚖️ Aviso Legal y Privacidad</h3>
+            <p><strong>Responsable:</strong> Miguel Ángel García Rodríguez (mikeldesuait@gmail.com).</p>
+            <p><strong>Finalidad:</strong> Gestión del Plan de Igualdad (RD 901/2020).</p>
+            <p><strong>Almacenamiento:</strong> Todos los datos se guardan de forma local en tu navegador. No se envían a servidores.</p>
+            <p><strong>Cookies:</strong> Esta web no utiliza cookies de rastreo. Solo almacenamiento técnico necesario.</p>
+            <p><strong>Enlaces externos:</strong> Los enlaces al BOE o al Ministerio son ajenos a esta aplicación.</p>
+            <button onclick="document.getElementById('modalPrivacidad').style.display='none'" class="btn btn-primary" style="margin-top: 1rem;">Entendido</button>
+        </div>
+    </div>
+
+    <script src="js/archivos-db.js"></script>
+    <script src="js/modelo.js"></script>
+    <script src="js/seed.js"></script>
+    <script src="js/seed-loader.js"></script>
+    <script src="js/usuario-selector.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/cumplimiento.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/checklist-pdf.js"></script>
+</body>
+</html>

@@ -41,7 +41,11 @@
                 <h2>📅 Libro de Reuniones y Actas</h2>
                 <p>Registra las reuniones de la Comisión Negociadora y deja constancia de los acuerdos.</p>
             </div>
-            <button type="button" class="btn btn-primary" id="btnNuevaReunion">➕ Nueva Reunión</button>
+            <div style="display:flex; gap:0.5rem; flex-wrap: wrap;">
+                <button type="button" class="btn" style="background:#1976d2; color:white;" onclick="document.getElementById('inputImportarActa').click()">📥 Importar Acta para firmar</button>
+                <input type="file" id="inputImportarActa" accept=".json" style="display:none;" onchange="window.importarActaParaFirmar(event)">
+                <button type="button" class="btn btn-primary" id="btnNuevaReunion">➕ Nueva Reunión</button>
+            </div>
         </section>
 
         <div id="listaReuniones" style="display: flex; flex-direction: column; gap: 1rem;">
@@ -119,8 +123,12 @@
         </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Gestor de Plan de Igualdad</p>
+        <footer class="main-footer" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; padding: 1rem 2rem;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <p style="margin:0;">&copy; 2026 Gestor de Plan de Igualdad</p>
+            <span style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; color: rgba(255,255,255,0.5);" title="Versión de la aplicación">Versión 1.1</span>
+        </div>
+        <a href="#" onclick="event.preventDefault(); document.getElementById('modalPrivacidad').style.display='flex';" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:0.85rem; transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">🔒 Aviso de Privacidad (Sin Cookies)</a>
     </footer>
 
     <script src="js/archivos-db.js"></script>
@@ -131,5 +139,52 @@
     <script src="js/nav.js"></script>
     <script src="js/reuniones.js"></script>
     <script src="js/toast.js"></script>
+
+    
+    
+    <!-- Modal Aviso Legal y Privacidad -->
+    <div id="modalPrivacidad" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; padding: 1rem;">
+        <div style="background:#fff; max-width:750px; width:100%; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; max-height: 90vh;">
+            
+            <div style="background:var(--primary-dark); color:#fff; padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center; border-radius: 12px 12px 0 0;">
+                <h3 style="margin:0; font-size: 1.1rem;">⚖️ Aviso Legal y Privacidad</h3>
+                <button onclick="document.getElementById('modalPrivacidad').style.display='none'" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer; line-height: 1;">✕</button>
+            </div>
+            
+            <div style="padding:1.5rem; font-size:0.9rem; overflow-y:auto; line-height: 1.6; color: #333;">
+                
+                <h4 style="color: var(--primary); margin-top: 0; margin-bottom: 0.5rem;">1. Información General (LSSI)</h4>
+                <p>En cumplimiento del artículo 10 de la Ley 34/2002 (LSSI), se informa que esta aplicación web es una herramienta de carácter personal, creada por <strong>Miguel Ángel García Rodríguez</strong> para facilitar la gestión interna del Plan de Igualdad en el seno del comité. Para cualquier consulta o duda, puede contactar en: <strong>mikeldesuait@gmail.com</strong>.</p>
+
+                <h4 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">2. Protección de Datos (RGPD)</h4>
+                <p>De conformidad con el Reglamento (UE) 2016/679 (RGPD), se informa que los datos personales introducidos en esta aplicación (nombres de los miembros del comité, asistencias, notas, etc.) son tratados de forma estrictamente local con la única finalidad de gestionar el Plan de Igualdad (amparado por el RD 901/2020). El responsable del tratamiento de estos datos es el propio usuario que los introduce (el comité).</p>
+
+                <h4 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">3. Almacenamiento 100% Local (Sin Servidores)</h4>
+                <p><strong>Esta aplicación no dispone de base de datos en la nube ni envía información a ningún servidor.</strong> Todos los datos que usted introduce se guardan exclusivamente en el almacenamiento local de su propio navegador (LocalStorage e IndexedDB). El creador de la herramienta no tiene acceso, en ningún momento, a los datos de la empresa ni de los trabajadores. La pérdida de datos por borrado de caché es responsabilidad del usuario, por lo que se recomienda el uso de las copias de seguridad (.json).</p>
+
+                <h4 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">4. Política de Cookies</h4>
+                <p>Esta web <strong>no utiliza cookies</strong> de análisis, publicidad ni rastreo. Únicamente utiliza el almacenamiento técnico necesario para el funcionamiento de la herramienta. Al no utilizar cookies de terceros, no se requiere el consentimiento explícito mediante banner.</p>
+
+                <h4 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">5. Alojamiento (GitHub Pages)</h4>
+                <p>El código fuente de esta aplicación está alojado en GitHub Pages. Al acceder a la web, GitHub puede registrar la dirección IP del visitante por motivos técnicos de seguridad (logs), sin que el creador de esta app tenga acceso a dichos datos.</p>
+                
+
+                <h4 style="color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem;">6. Enlaces a Terceros y Almacenamiento Técnico</h4>
+                <p>Esta herramienta incluye enlaces de referencia a normativas oficiales (como el BOE) y al Ministerio de Igualdad. Al hacer clic en ellos, el usuario accede a sitios web externos cuyas políticas de privacidad son ajenas a esta aplicación. Por otro lado, esta web utiliza el almacenamiento local del navegador (LocalStorage), que es <strong>estrictamente necesario</strong> para el funcionamiento técnico de la herramienta (guardar actas y auditorías) y, por tanto, está exento de consentimiento previo según la LSSI.</p>
+
+                <div style="background: #f5f5f5; padding: 1rem; border-left: 4px solid var(--primary); margin-top: 1.5rem;">
+                    <p style="margin: 0;"><strong>Derechos del usuario:</strong> Puede ejercer sus derechos de acceso, rectificación, supresión y oposición simplemente borrando los datos desde la propia aplicación o contactando con el correo indicado arriba.</p>
+                </div>
+
+            </div>
+            
+            <div style="padding: 1rem 1.5rem; background:#f9f9f9; text-align:right; border-top:1px solid #eee; border-radius: 0 0 12px 12px;">
+                <button onclick="document.getElementById('modalPrivacidad').style.display='none'" class="btn btn-primary">He leído y entiendo</button>
+            </div>
+        </div>
+    </div>
+
+
+
 </body>
 </html>

@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (path === 'index.html' || path === '') activeIndex = 'active';
     else if (path === 'reuniones.html') activeReuniones = 'active';
-    else if (path === 'cumplimiento.html' || path === 'informe.html' || path === 'peticion.html') activePasos = 'active';
+    else if (path === 'cumplimiento.html' || path === 'informe.html' || path === 'peticion.html' || path === 'documentos.html') activePasos = 'active';
     else if (path === 'estado.html') activeEstado = 'active';
     else if (path === 'configuracion.html') activeConfig = 'active';
     else if (path === 'guia.html') activeGuia = 'active';

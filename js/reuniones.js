@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let reuniones = JSON.parse(localStorage.getItem(STORAGE_REUNIONES) || '[]');
     let editandoId = null;
 
-    // --- Renderizar Lista ---
     function renderLista() {
         lista.innerHTML = '';
         if (reuniones.length === 0) {
@@ -39,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <strong>Modalidad:</strong> ${r.modalidad || 'Presencial'} ${r.hora ? '| <strong>Hora:</strong> ' + r.hora : ''}
                         </p>
                     </div>
-                    <div style="display:flex; gap:0.5rem;">
-                        <button class="btn" onclick="window.generarPdfReunion('${r.id}')" style="background:var(--secondary); padding:0.4rem 0.8rem; font-size:0.85rem;">🖨️ Ver Acta / PDF</button>
+                    <div style="display:flex; gap:0.5rem; flex-wrap: wrap;">
+                        <button class="btn" onclick="window.generarPdfReunion('${r.id}')" style="background:var(--secondary); padding:0.4rem 0.8rem; font-size:0.85rem;">🖨️ Ver Acta</button>
                         <button class="btn" onclick="window.editarReunion('${r.id}')" style="background:var(--primary); padding:0.4rem 0.8rem; font-size:0.85rem;">✏️ Editar</button>
                         <button class="btn btn-danger" onclick="window.borrarReunion('${r.id}')" style="padding:0.4rem 0.8rem; font-size:0.85rem;">🗑️</button>
                     </div>
@@ -53,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Renderizar Asistentes ---
     function renderizarListaAsistentes(asistenciasGuardadas = []) {
         const contenedor = document.getElementById('listaAsistentes');
         contenedor.innerHTML = '';
@@ -111,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Abrir Modal ---
     function abrirModal(editId = null) {
         editandoId = editId;
         
@@ -137,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'flex';
     }
 
-    // --- Guardar Reunión ---
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         
@@ -180,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderLista();
     });
 
-    // --- Eventos Globales ---
     btnNueva.addEventListener('click', () => abrirModal());
     btnCancelar.addEventListener('click', () => modal.style.display = 'none');
 
@@ -189,30 +184,55 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('¿Eliminar esta acta de reunión?')) {
             reuniones = reuniones.filter(m => m.id !== id);
             localStorage.setItem(STORAGE_REUNIONES, JSON.stringify(reuniones));
+            localStorage.removeItem('firmas_' + id);
             renderLista();
         }
     };
 
-    // --- GENERAR PDF DEL ACTA CON FIRMAS ---
+    // --- FUNCIÓN GLOBAL PARA EXPORTAR EL ACTA (Se llama desde dentro del PDF) ---
+    window.exportarActaParaFirmar = function(id) {
+        // Recuperamos la reunión y las firmas actuales del localStorage
+        const listaReuniones = JSON.parse(localStorage.getItem('planIgualdadReuniones') || '[]');
+        const acta = listaReuniones.find(x => x.id === id);
+        if (!acta) return;
+        
+        const firmas = JSON.parse(localStorage.getItem('firmas_' + id) || '[]');
+        
+        const paquete = {
+            tipo: 'acta_para_firmar',
+            version: '1.0',
+            fecha_exportacion: new Date().toISOString(),
+            acta: acta,
+            firmas: firmas
+        };
+
+        const blob = new Blob([JSON.stringify(paquete, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const fechaFmt = new Date(acta.fecha).toLocaleDateString('es-ES').replace(/\//g, '-');
+        a.download = `Acta_Para_Firmar_${fechaFmt}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     window.generarPdfReunion = function(id) {
         const r = reuniones.find(x => x.id === id);
         if (!r) return;
         
         const config = JSON.parse(localStorage.getItem('planIgualdadConfig') || '{}');
         const cumplimiento = MODELO.getEstadoCompleto();
+        const listaMiembros = MODELO.getResponsables();
+
+        const empresaReales = (config.empresaMiembros || []).map(m => m.nombre);
+        const asistentesParaFirmas = (r.asistentesData || []).map(a => {
+            const m = listaMiembros.find(x => x.valor === a.nombre);
+            const esEmpresa = empresaReales.includes(a.nombre);
+            return { nombre: a.nombre, estado: a.estado, cargo: m ? m.rol : '', esEmpresa: esEmpresa };
+        });
 
         const fHoy = new Date(r.fecha).toLocaleDateString('es-ES');
         const fProx = r.proxima ? new Date(r.proxima).toLocaleDateString('es-ES') : 'Por determinar';
-
-        const nombresPasos = {
-            f1p1: 'Declaración de compromiso', f1p2: 'Constitución de la Comisión', f1p3: 'Acta de constitución', f1p4: 'Comunicación a la plantilla',
-            f2p1: 'Planificación del diagnóstico', f2p2: 'Recogida de datos', f2p3: 'Informe diagnóstico', f2p4: 'Encuesta a la plantilla',
-            f3p1: 'Registro Retributivo', f3p2: 'Consulta a la RLPT', f3p3: 'Valoración de Puestos', f3p4: 'Auditoría Retributiva', f3p5: 'Análisis de brecha',
-            f4p1: 'Definición de objetivos', f4p2: 'Diseño de medidas', f4p3: 'Medios y recursos', f4p4: 'Calendario',
-            f5p1: 'Acta de aprobación', f5p2: 'Registro REGCON', f5p3: 'Sistema de seguimiento', f5p4: 'Procedimiento de revisión',
-            f6p1: 'Protocolo de acoso', f6p2: 'Canal de denuncias', f6p3: 'Protección violencia de género'
-        };
-        const nombrePaso = (id) => nombresPasos[id.toLowerCase()] || id.toUpperCase();
 
         let hallazgosHTML = '';
         let hayHallazgos = false;
@@ -223,36 +243,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const estadoTxt = paso.resultado_auditoria === 'parcial' ? '⚠️ PARCIAL' : '❌ NO CONFORME';
                 hallazgosHTML += `
                     <div class="hallazgo">
-                        <p style="margin: 0 0 5px 0;"><strong>${nombrePaso(pasoId)} - ${estadoTxt}</strong></p>
-                        <p style="margin: 0 0 5px 0;"><strong>Hallazgo:</strong> ${paso.hallazgos || 'Pendiente de definir'}</p>
-                        <p style="margin: 0;"><strong>Petición de la Comisión:</strong> ${paso.plan_accion || 'Pendiente de definir'}</p>
+                        <p style="margin: 0 0 5px 0;"><strong>${pasoId.toUpperCase()} - ${estadoTxt}</strong></p>
+                        <p style="margin: 0 0 5px 0;"><strong>Hallazgo:</strong> ${paso.hallazgos || 'Pendiente'}</p>
+                        <p style="margin: 0;"><strong>Petición:</strong> ${paso.plan_accion || 'Pendiente'}</p>
                     </div>
                 `;
             }
         }
         if (!hayHallazgos) hallazgosHTML = '<p style="color: #000;">✅ No hay hallazgos pendientes en este momento.</p>';
 
-        let cambiosHTML = '';
-        const fechaReunionStr = r.fecha;
-        for (const [pasoId, datos] of Object.entries(cumplimiento)) {
-            const paso = MODELO.normalizarPaso(datos);
-            const cambiosDelDia = paso.historial.filter(h => h.fecha.startsWith(fechaReunionStr));
-            if (cambiosDelDia.length > 0) {
-                cambiosHTML += `<li style="margin-bottom: 0.3rem;"><strong>${nombrePaso(pasoId)}:</strong> `;
-                cambiosHTML += cambiosDelDia.map(c => c.accion).join(' | ');
-                cambiosHTML += ` (por ${cambiosDelDia[0].usuario})</li>`;
-            }
-        }
-        let seccionCambios = '';
-        if (cambiosHTML) {
-            seccionCambios = `
-                <div class="seccion">
-                    <h3>5. ACTUALIZACIONES DEL ESTADO DEL PLAN EN ESTA SESIÓN</h3>
-                    <p>Durante la reunión del día de hoy, se han registrado los siguientes avances en la aplicación:</p>
-                    <ul style="padding-left: 1.5rem;">${cambiosHTML}</ul>
-                </div>
-            `;
-        }
+        const firmasGuardadas = JSON.parse(localStorage.getItem('firmas_' + r.id) || '[]');
 
         const ventana = window.open('', '_blank');
         ventana.document.write(`
@@ -261,44 +261,45 @@ document.addEventListener('DOMContentLoaded', () => {
             <head>
                 <meta charset="UTF-8">
                 <title>Acta de Reunión - ${fHoy}</title>
-                <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"><\/script>
                 <style>
                     body { font-family: sans-serif; padding: 2rem; color: #000; line-height: 1.5; }
                     h1, h2 { text-align: center; }
                     .seccion { margin-top: 1.5rem; page-break-inside: avoid; }
                     .seccion h3 { background: #f4f4f4; color: #000; padding: 0.5rem; border-bottom: 2px solid #000; margin-bottom: 0.8rem; text-transform: uppercase; font-size: 14px; }
                     .hallazgo { page-break-inside: avoid; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; }
-                    .firmas { margin-top: 4rem; display: flex; justify-content: space-between; text-align: center; }
                     @media print { .no-print { display: none !important; } body { padding: 0; } }
                 </style>
             </head>
             <body>
-                <div class="no-print" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
-                    <div>
-                        <button onclick="document.getElementById('panelFirmas').style.display='block'; window.scrollTo(0,0);" style="padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">✍️ Firmar el Acta</button>
-                        <button onclick="window.print()" style="padding: 10px 20px; background: #6a1b9a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">🖨️ Imprimir / Guardar como PDF</button>
-                        <button onclick="window.close()" style="padding: 10px 20px; background: #ccc; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px;">Cerrar</button>
+                <div class="no-print" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="abrirPanelFirmas()" style="padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">✍️ Firmar el Acta</button>
+                        <button onclick="window.opener.exportarActaParaFirmar('${r.id}')" style="padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">📤 Exportar Acta (JSON)</button>
+                        <button onclick="window.print()" style="padding: 10px 20px; background: #6a1b9a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">🖨️ Guardar como PDF</button>
+                        <button onclick="window.close()" style="padding: 10px 20px; background: #ccc; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Cerrar</button>
                     </div>
                 </div>
 
                 <div id="panelFirmas" class="no-print" style="display: none; background: #fff; border: 2px solid #6a1b9a; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                    <h3 style="margin-top: 0; color: #6a1b9a;">Firmas Digitales</h3>
-                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Firmad en los recuadros blancos (con el ratón o el dedo). Las firmas se incrustarán en el documento final.</p>
+                    <h3 style="margin-top: 0; color: #6a1b9a;">Firmas Digitales (Solo RLPT)</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem;">Selecciona a la persona, dibuja su firma y pulsa "Añadir Firma".</p>
                     
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 250px;">
-                            <label style="font-size: 0.85rem; font-weight: bold;">Firma Presidencia / Empresa</label>
-                            <canvas id="canvasEmpresa" style="width: 100%; height: 150px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; touch-action: none;"></canvas>
-                        </div>
-                        <div style="flex: 1; min-width: 250px;">
-                            <label style="font-size: 0.85rem; font-weight: bold;">Firma Secretaría / Trabajadores</label>
-                            <canvas id="canvasTrabajadores" style="width: 100%; height: 150px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; touch-action: none;"></canvas>
-                        </div>
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <select id="selectFirmante" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ccc; flex: 1; min-width: 200px;">
+                            <option value="">— Selecciona quién firma —</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                        <label style="font-size: 0.85rem; font-weight: bold;">Firma (Dibuja con el dedo o el ratón):</label>
+                        <canvas id="canvasFirma" style="width: 100%; height: 150px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; touch-action: none;"></canvas>
                     </div>
                     
-                    <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-                        <button onclick="guardarFirmas()" style="padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Incrustar Firmas en el Documento</button>
-                        <button onclick="limpiarFirmas()" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 5px; cursor: pointer;">Limpiar todo</button>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button onclick="anadirFirma()" style="padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">➕ Añadir Firma</button>
+                        <button onclick="limpiarLienzo()" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 5px; cursor: pointer;">Borrar Trazo</button>
+                        <button onclick="cerrarPanelFirmas()" style="padding: 10px 20px; background: #6a1b9a; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: auto;">Terminar y Cerrar</button>
                     </div>
                 </div>
 
@@ -312,28 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="seccion">
                     <h3>1. ASISTENTES</h3>
-                    ${(() => {
-                        let empresaAsist = [];
-                        let trabajadoresAsist = [];
-                        const todosLosMiembros = MODELO.getResponsables();
-                        
-                        (r.asistentesData || []).forEach(a => {
-                            if (a.estado === 'No asiste') return;
-                            const miembro = todosLosMiembros.find(m => m.valor === a.nombre);
-                            const parte = miembro ? miembro.parte : 'trabajadores';
-                            const texto = `<li>${a.nombre} (${a.estado})</li>`;
-                            
-                            if (parte === 'empresa') empresaAsist.push(texto);
-                            else trabajadoresAsist.push(texto);
-                        });
-                        
-                        let html = '';
-                        if (empresaAsist.length) html += `<p style="margin-bottom:0.2rem;"><strong>Por la Empresa:</strong></p><ul style="margin-top:0; margin-bottom:1rem;">${empresaAsist.join('')}</ul>`;
-                        if (trabajadoresAsist.length) html += `<p style="margin-bottom:0.2rem;"><strong>Por la Representación de los Trabajadores:</strong></p><ul style="margin-top:0; margin-bottom:1rem;">${trabajadoresAsist.join('')}</ul>`;
-                        
-                        if (!html) html = '<p>No especificados</p>';
-                        return html;
-                    })()}
+                    ${r.asistentes || 'No especificados'}
                 </div>
 
                 <div class="seccion">
@@ -352,8 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${hallazgosHTML}
                 </div>
 
-                ${seccionCambios}
-
                 ${r.advertencia ? `
                 <div class="seccion" style="border: 2px solid #000; padding: 1rem; page-break-inside: avoid;">
                     <h4 style="margin-top:0; text-transform: uppercase;">Advertencia Legal y Constancia de Incumplimiento</h4>
@@ -368,61 +346,157 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <p style="margin-top:2rem;">Y sin más asuntos que tratar, se da por finalizada la reunión, firmando el presente documento en prueba de conformidad.</p>
 
-                <div class="firmas">
-                    <div style="width:45%;">
-                        <div id="firmaImgEmpresa" style="height: 80px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 0.5rem;"></div>
-                        <p style="border-top: 1px solid #000; padding-top: 0.5rem; margin: 0;"><strong>Por la Empresa</strong></p>
-                    </div>
-                    <div style="width:45%;">
-                        <div id="firmaImgTrabajadores" style="height: 80px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 0.5rem;"></div>
-                        <p style="border-top: 1px solid #000; padding-top: 0.5rem; margin: 0;"><strong>Por la Comisión</strong></p>
+                <div class="firmas" style="margin-top: 4rem; display: block; page-break-inside: avoid;">
+                    <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 1rem; font-weight:bold;">POR LA REPRESENTACIÓN LEGAL DE LOS TRABAJADORES (RLPT)</p>
+                    
+                    <div id="contenedorFirmas" style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 1rem; margin-bottom: 3rem;"></div>
+
+                    <div style="border: 1px solid #000; padding: 1.5rem; border-radius: 8px; text-align: center; background: #fff; margin-top: 3rem; page-break-inside: avoid;">
+                        <p style="margin: 0 0 0.5rem 0; font-weight: bold; color: #000; font-size: 14px;">Firma de la Dirección / Representación de la Empresa</p>
+                        <p style="margin: 0; font-size: 0.85rem; color: #555;">Este espacio está reservado para la firma de la empresa.</p>
+                        <div style="height: 100px;"></div>
+                        <p style="border-top: 1px solid #000; width: 70%; margin: 0 auto; padding-top: 0.5rem; font-size: 12px;">Fdo: La Dirección / RRHH</p>
                     </div>
                 </div>
 
                 <script>
-                    let sigPadEmpresa, sigPadTrabajadores;
-                    
-                    window.addEventListener('load', () => {
-                        const cEmp = document.getElementById('canvasEmpresa');
-                        const cTrab = document.getElementById('canvasTrabajadores');
-                        
-                        const ratio = Math.max(window.devicePixelRatio || 1, 1);
-                        cEmp.width = cEmp.offsetWidth * ratio;
-                        cEmp.height = cEmp.offsetHeight * ratio;
-                        cEmp.getContext("2d").scale(ratio, ratio);
-                        
-                        cTrab.width = cTrab.offsetWidth * ratio;
-                        cTrab.height = cTrab.offsetHeight * ratio;
-                        cTrab.getContext("2d").scale(ratio, ratio);
+                    let sigPad;
+                    let asistentesReunion = ${JSON.stringify(asistentesParaFirmas)};
+                    const reunionId = '${r.id}';
+                    let firmasActuales = ${JSON.stringify(firmasGuardadas)};
 
-                        sigPadEmpresa = new SignaturePad(cEmp, { backgroundColor: 'rgba(255, 255, 255, 0)' });
-                        sigPadTrabajadores = new SignaturePad(cTrab, { backgroundColor: 'rgba(255, 255, 255, 0)' });
+                    function pintarFirma(nombre, dataUrl) {
+                        const contenedor = document.getElementById('contenedorFirmas');
+                        const div = document.createElement('div');
+                        div.style.width = '45%';
+                        div.style.textAlign = 'center';
+                        div.style.marginBottom = '1rem';
+                        div.innerHTML = '<img src="' + dataUrl + '" style="max-height: 80px; max-width: 100%;">' +
+                            '<p style="border-top: 1px solid #000; padding-top: 0.5rem; margin: 0; font-size: 12px;"><strong>Firmado por: ' + nombre + '</strong></p>';
+                        contenedor.appendChild(div);
+                    }
+
+                    window.addEventListener('load', () => {
+                        firmasActuales.forEach(f => pintarFirma(f.nombre, f.imagen));
                     });
 
-                    function guardarFirmas() {
-                        if (!sigPadEmpresa.isEmpty()) {
-                            const dataUrl = sigPadEmpresa.toDataURL('image/png');
-                            document.getElementById('firmaImgEmpresa').innerHTML = '<img src="' + dataUrl + '" style="max-height: 80px; max-width: 100%;">';
+                    function abrirPanelFirmas() {
+                        const panel = document.getElementById('panelFirmas');
+                        const select = document.getElementById('selectFirmante');
+                        const canvas = document.getElementById('canvasFirma');
+                        
+                        panel.style.display = 'block';
+                        
+                        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                        canvas.width = canvas.offsetWidth * ratio;
+                        canvas.height = canvas.offsetHeight * ratio;
+                        canvas.getContext("2d").scale(ratio, ratio);
+                        
+                        if (!sigPad) {
+                            sigPad = new SignaturePad(canvas, { backgroundColor: 'rgba(255, 255, 255, 0)' });
+                        } else {
+                            sigPad.clear();
                         }
-                        if (!sigPadTrabajadores.isEmpty()) {
-                            const dataUrl = sigPadTrabajadores.toDataURL('image/png');
-                            document.getElementById('firmaImgTrabajadores').innerHTML = '<img src="' + dataUrl + '" style="max-height: 80px; max-width: 100%;">';
-                        }
-                        document.getElementById('panelFirmas').style.display = 'none';
-                        alert('✅ Firmas incrustadas. Ya puedes imprimir o guardar el PDF.');
+                        
+                        select.innerHTML = '<option value="">— Selecciona quién firma —</option>';
+                        asistentesReunion.forEach(a => {
+                            if (!a.esEmpresa && a.estado !== 'No asiste') {
+                                const opt = document.createElement('option');
+                                opt.value = a.nombre;
+                                opt.textContent = a.nombre + (a.cargo ? ' - ' + a.cargo : '');
+                                
+                                if (firmasActuales.some(f => f.nombre === a.nombre)) {
+                                    opt.disabled = true;
+                                    opt.textContent += ' (Ya firmado)';
+                                }
+                                select.appendChild(opt);
+                            }
+                        });
+                        
+                        window.scrollTo(0,0);
                     }
 
-                    function limpiarFirmas() {
-                        if (sigPadEmpresa) sigPadEmpresa.clear();
-                        if (sigPadTrabajadores) sigPadTrabajadores.clear();
-                        document.getElementById('firmaImgEmpresa').innerHTML = '';
-                        document.getElementById('firmaImgTrabajadores').innerHTML = '';
+                    function anadirFirma() {
+                        const select = document.getElementById('selectFirmante');
+                        const nombreSeleccionado = select.value;
+                        
+                        if (!nombreSeleccionado) { alert('⚠️ Primero selecciona quién va a firmar.'); return; }
+                        if (!sigPad || sigPad.isEmpty()) { alert('⚠️ El lienzo está vacío. Dibuja la firma.'); return; }
+
+                        const dataUrl = sigPad.toDataURL('image/png');
+                        firmasActuales.push({ nombre: nombreSeleccionado, imagen: dataUrl });
+                        
+                        localStorage.setItem('firmas_' + reunionId, JSON.stringify(firmasActuales));
+                        
+                        pintarFirma(nombreSeleccionado, dataUrl);
+                        
+                        sigPad.clear();
+                        select.value = '';
+                        select.options[select.selectedIndex].disabled = true;
+                        select.options[select.selectedIndex].textContent += ' (Ya firmado)';
                     }
+
+                    function limpiarLienzo() { if (sigPad) sigPad.clear(); }
+                    function cerrarPanelFirmas() { document.getElementById('panelFirmas').style.display = 'none'; }
                 <\/script>
             </body>
             </html>
         `);
         ventana.document.close();
+    };
+
+    // 3. Lógica de importación
+    window.importarActaParaFirmar = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.tipo !== 'acta_para_firmar') {
+                    alert('❌ Este archivo no es un acta válida para firmar.');
+                    return;
+                }
+
+                const actaRecibida = data.acta;
+                let reunionesLocales = JSON.parse(localStorage.getItem('planIgualdadReuniones') || '[]');
+                
+                const idx = reunionesLocales.findIndex(r => r.id === actaRecibida.id);
+                if (idx === -1) {
+                    reunionesLocales.push(actaRecibida);
+                } else {
+                    reunionesLocales[idx] = { ...reunionesLocales[idx], ...actaRecibida };
+                }
+                localStorage.setItem('planIgualdadReuniones', JSON.stringify(reunionesLocales));
+
+                const firmasLocales = JSON.parse(localStorage.getItem('firmas_' + actaRecibida.id) || '[]');
+                if (data.firmas && Array.isArray(data.firmas)) {
+                    data.firmas.forEach(firmaRecibida => {
+                        const indexFirma = firmasLocales.findIndex(f => f.nombre === firmaRecibida.nombre);
+                        if (indexFirma === -1) {
+                            firmasLocales.push(firmaRecibida);
+                        } else {
+                            firmasLocales[indexFirma] = firmaRecibida;
+                        }
+                    });
+                }
+                localStorage.setItem('firmas_' + actaRecibida.id, JSON.stringify(firmasLocales));
+
+                alert('✅ Acta importada con éxito. Se han recuperado las firmas anteriores y se ha abierto el documento para que puedas firmar.');
+                
+                setTimeout(() => {
+                    window.generarPdfReunion(actaRecibida.id);
+                    setTimeout(() => location.reload(), 2000);
+                }, 500);
+
+            } catch (err) {
+                console.error(err);
+                alert('❌ Error al leer el archivo. Asegúrate de que es un archivo válido.');
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
     };
 
     renderLista();

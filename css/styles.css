@@ -536,3 +536,52 @@ button, .btn {
         z-index: 999;
     }
 }
+
+/* ===== DISEÑO DE LOS MIEMBROS DEL COMITÉ EN TABLETS Y MÓVILES ===== */
+@media (max-width: 768px) {
+    /* Hacemos que la fila del representante se convierta en una columna */
+    .miembro-empresa, .miembro-trabajadores {
+        flex-direction: column !important;
+        background: #fff;
+        padding: 0.8rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        gap: 0.5rem !important;
+    }
+
+    /* El campo de texto ocupa todo el ancho */
+    .miembro-empresa input, .miembro-trabajadores input {
+        width: 100%;
+        margin-bottom: 0.2rem;
+    }
+
+    /* El desplegable ocupa todo el ancho */
+    .miembro-empresa select, .miembro-trabajadores select {
+        width: 100% !important;
+    }
+
+    /* El botón de la papelera se alinea a la derecha y se hace más grande para tocarlo bien */
+    .miembro-empresa button, .miembro-trabajadores button {
+        width: 100%;
+        padding: 0.6rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+/* Forzar que todas las tarjetas tengan la misma altura y el botón siempre abajo */
+.cards {
+    align-items: stretch;
+}
+
+.cards .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cards .card p {
+    flex-grow: 1; /* Esto empuja el botón hacia abajo */
+    margin-bottom: 1.5rem;
+}
