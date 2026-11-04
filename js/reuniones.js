@@ -368,19 +368,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     const reunionId = '${r.id}';
                     let firmasActuales = ${JSON.stringify(firmasGuardadas)};
 
-                    function pintarFirma(nombre, dataUrl) {
+                    function pintarFirma(nombre, dataUrl, fechaStr) {
                         const contenedor = document.getElementById('contenedorFirmas');
                         const div = document.createElement('div');
                         div.style.width = '45%';
                         div.style.textAlign = 'center';
                         div.style.marginBottom = '1rem';
+                        
+                        // Si no nos pasan fecha (al cargar antiguas), usamos un texto genérico
+                        const textoFecha = fechaStr ? fechaStr : 'Fecha no registrada';
+                        
                         div.innerHTML = '<img src="' + dataUrl + '" style="max-height: 80px; max-width: 100%;">' +
-                            '<p style="border-top: 1px solid #000; padding-top: 0.5rem; margin: 0; font-size: 12px;"><strong>Firmado por: ' + nombre + '</strong></p>';
+                            '<p style="border-top: 1px solid #000; padding-top: 0.5rem; margin: 0; font-size: 12px;">' +
+                            '<strong>Firmado por: ' + nombre + '</strong><br>' +
+                            '<span style="color: #555;">' + textoFecha + '</span></p>';
                         contenedor.appendChild(div);
                     }
 
                     window.addEventListener('load', () => {
-                        firmasActuales.forEach(f => pintarFirma(f.nombre, f.imagen));
+                        firmasActuales.forEach(f => pintarFirma(f.nombre, f.imagen, f.fecha));
                     });
 
                     function abrirPanelFirmas() {
@@ -429,11 +435,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (!sigPad || sigPad.isEmpty()) { alert('⚠️ El lienzo está vacío. Dibuja la firma.'); return; }
 
                         const dataUrl = sigPad.toDataURL('image/png');
-                        firmasActuales.push({ nombre: nombreSeleccionado, imagen: dataUrl });
+                        
+                        // Capturamos la fecha y hora local
+                        const ahora = new Date();
+                        const fechaFmt = ahora.toLocaleDateString('es-ES') + ' a las ' + ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                        
+                        // Guardamos la firma con su fecha
+                        firmasActuales.push({ nombre: nombreSeleccionado, imagen: dataUrl, fecha: fechaFmt });
                         
                         localStorage.setItem('firmas_' + reunionId, JSON.stringify(firmasActuales));
                         
-                        pintarFirma(nombreSeleccionado, dataUrl);
+                        pintarFirma(nombreSeleccionado, dataUrl, fechaFmt);
                         
                         sigPad.clear();
                         select.value = '';
