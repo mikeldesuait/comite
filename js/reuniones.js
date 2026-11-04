@@ -224,10 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const cumplimiento = MODELO.getEstadoCompleto();
         const listaMiembros = MODELO.getResponsables();
 
-        const empresaReales = (config.empresaMiembros || []).map(m => m.nombre);
+        // Identificamos a los de la empresa por su nombre (sin importar mayúsculas/espacios)
+        const empresaReales = (config.empresaMiembros || []).map(m => m.nombre.toLowerCase().trim());
+        
         const asistentesParaFirmas = (r.asistentesData || []).map(a => {
             const m = listaMiembros.find(x => x.valor === a.nombre);
-            const esEmpresa = empresaReales.includes(a.nombre);
+            // Es de la empresa si su nombre está en la lista de empresa
+            const esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
             return { nombre: a.nombre, estado: a.estado, cargo: m ? m.rol : '', esEmpresa: esEmpresa };
         });
 
@@ -400,17 +403,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         select.innerHTML = '<option value="">— Selecciona quién firma —</option>';
                         asistentesReunion.forEach(a => {
-                            if (!a.esEmpresa && a.estado !== 'No asiste') {
-                                const opt = document.createElement('option');
-                                opt.value = a.nombre;
-                                opt.textContent = a.nombre + (a.cargo ? ' - ' + a.cargo : '');
-                                
-                                if (firmasActuales.some(f => f.nombre === a.nombre)) {
-                                    opt.disabled = true;
-                                    opt.textContent += ' (Ya firmado)';
-                                }
-                                select.appendChild(opt);
+                            // FILTRO INFALIBLE: Si esEmpresa es true, se ignora. Si es false o no existe, se añade.
+                            if (a.esEmpresa === true) return;
+                            if (a.estado === 'No asiste') return;
+
+                            const opt = document.createElement('option');
+                            opt.value = a.nombre;
+                            opt.textContent = a.nombre + (a.cargo ? ' - ' + a.cargo : '');
+                            
+                            if (firmasActuales.some(f => f.nombre === a.nombre)) {
+                                opt.disabled = true;
+                                opt.textContent += ' (Ya firmado)';
                             }
+                            select.appendChild(opt);
                         });
                         
                         window.scrollTo(0,0);
