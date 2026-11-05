@@ -189,20 +189,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- FUNCIÓN GLOBAL PARA EXPORTAR EL ACTA (Se llama desde dentro del PDF) ---
+    // --- FUNCIÓN GLOBAL PARA EXPORTAR EL ACTA (CON ETIQUETA DE BANDO) ---
     window.exportarActaParaFirmar = function(id) {
-        // Recuperamos la reunión y las firmas actuales del localStorage
         const listaReuniones = JSON.parse(localStorage.getItem('planIgualdadReuniones') || '[]');
         const acta = listaReuniones.find(x => x.id === id);
         if (!acta) return;
+
+        const config = JSON.parse(localStorage.getItem('planIgualdadConfig') || '{}');
+        const listaMiembros = MODELO.getResponsables();
+        const empresaReales = (config.empresaMiembros || []).map(m => m.nombre.toLowerCase().trim());
         
+        // SELLAMOS a los asistentes con su bando
+        const asistentesSellados = (acta.asistentesData || []).map(a => {
+            const m = listaMiembros.find(x => x.valor === a.nombre);
+            const esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
+            return {
+                nombre: a.nombre,
+                estado: a.estado,
+                cargo: m ? m.rol : '',
+                bando: esEmpresa ? 'empresa' : 'trabajador'
+            };
+        });
+
+        const actaExportada = { ...acta, asistentesData: asistentesSellados };
         const firmas = JSON.parse(localStorage.getItem('firmas_' + id) || '[]');
         
         const paquete = {
             tipo: 'acta_para_firmar',
-            version: '1.0',
+            version: '1.2',
             fecha_exportacion: new Date().toISOString(),
-            acta: acta,
+            acta: actaExportada,
             firmas: firmas
         };
 
@@ -214,6 +230,60 @@ document.addEventListener('DOMContentLoaded', () => {
         a.download = `Acta_Para_Firmar_${fechaFmt}.json`;
         a.click();
         URL.revokeObjectURL(url);
+    };
+
+    // --- FUNCIÓN GLOBAL PARA IMPORTAR ---
+    window.importarActaParaFirmar = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.tipo !== 'acta_para_firmar') {
+                    alert('❌ Este archivo no es un acta válida para firmar.');
+                    return;
+                }
+
+                const actaRecibida = data.acta;
+                let reunionesLocales = JSON.parse(localStorage.getItem('planIgualdadReuniones') || '[]');
+                
+                const idx = reunionesLocales.findIndex(r => r.id === actaRecibida.id);
+                if (idx === -1) {
+                    reunionesLocales.push(actaRecibida);
+                } else {
+                    reunionesLocales[idx] = { ...reunionesLocales[idx], ...actaRecibida };
+                }
+                localStorage.setItem('planIgualdadReuniones', JSON.stringify(reunionesLocales));
+
+                const firmasLocales = JSON.parse(localStorage.getItem('firmas_' + actaRecibida.id) || '[]');
+                if (data.firmas && Array.isArray(data.firmas)) {
+                    data.firmas.forEach(firmaRecibida => {
+                        const indexFirma = firmasLocales.findIndex(f => f.nombre === firmaRecibida.nombre);
+                        if (indexFirma === -1) {
+                            firmasLocales.push(firmaRecibida);
+                        } else {
+                            firmasLocales[indexFirma] = firmaRecibida;
+                        }
+                    });
+                }
+                localStorage.setItem('firmas_' + actaRecibida.id, JSON.stringify(firmasLocales));
+
+                alert('✅ Acta importada con éxito. Se han recuperado las firmas anteriores y se ha abierto el documento para que puedas firmar.');
+                
+                setTimeout(() => {
+                    window.generarPdfReunion(actaRecibida.id);
+                    setTimeout(() => location.reload(), 2000);
+                }, 500);
+
+            } catch (err) {
+                console.error(err);
+                alert('❌ Error al leer el archivo. Asegúrate de que es un archivo válido.');
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
     };
 
     window.generarPdfReunion = function(id) {
@@ -229,11 +299,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const asistentesParaFirmas = (r.asistentesData || []).map(a => {
             const m = listaMiembros.find(x => x.valor === a.nombre);
             
-            // MAGIA: Si el asistente ya viene con la etiqueta "esEmpresa" del JSON, la usamos.
-            // Si no (porque es una reunión creada en este mismo PC), la calculamos.
             let esEmpresa = false;
-            if (a.esEmpresa !== undefined) {
-                esEmpresa = a.esEmpresa;
+            if (a.bando) {
+                esEmpresa = (a.bando === 'empresa');
             } else {
                 esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
             }
@@ -323,7 +391,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 <div class="seccion">
                     <h3>1. ASISTENTES</h3>
-                    ${r.asistentes || 'No especificados'}
+                    ${(() => {
+                        let empresaAsist = [];
+                        let trabajadoresAsist = [];
+                        
+                        (r.asistentesData || []).forEach(a => {
+                            if (a.estado === 'No asiste') return;
+                            const texto = `<li>${a.nombre} (${a.estado})</li>`;
+                            
+                            let esEmpresa = false;
+                            if (a.bando) {
+                                esEmpresa = (a.bando === 'empresa');
+                            } else {
+                                const empresaReales = (config.empresaMiembros || []).map(m => m.nombre.toLowerCase().trim());
+                                esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
+                            }
+
+                            if (esEmpresa) empresaAsist.push(texto);
+                            else trabajadoresAsist.push(texto);
+                        });
+                        
+                        let html = '';
+                        if (empresaAsist.length) html += `<p style="margin-bottom:0.2rem;"><strong>Por la Empresa:</strong></p><ul style="margin-top:0; margin-bottom:1rem; padding-left: 1.5rem;">${empresaAsist.join('')}</ul>`;
+                        if (trabajadoresAsist.length) html += `<p style="margin-bottom:0.2rem;"><strong>Por la Representación de los Trabajadores:</strong></p><ul style="margin-top:0; margin-bottom:1rem; padding-left: 1.5rem;">${trabajadoresAsist.join('')}</ul>`;
+                        
+                        if (!html) html = '<p>No especificados</p>';
+                        return html;
+                    })()}
                 </div>
 
                 <div class="seccion">
@@ -382,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         div.style.textAlign = 'center';
                         div.style.marginBottom = '1rem';
                         
-                        // Si no nos pasan fecha (al cargar antiguas), usamos un texto genérico
                         const textoFecha = fechaStr ? fechaStr : 'Fecha no registrada';
                         
                         div.innerHTML = '<img src="' + dataUrl + '" style="max-height: 80px; max-width: 100%;">' +
@@ -416,7 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         select.innerHTML = '<option value="">— Selecciona quién firma —</option>';
                         asistentesReunion.forEach(a => {
-                            // FILTRO INFALIBLE: Si esEmpresa es true, se ignora. Si es false o no existe, se añade.
                             if (a.esEmpresa === true) return;
                             if (a.estado === 'No asiste') return;
 
@@ -442,12 +534,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (!sigPad || sigPad.isEmpty()) { alert('⚠️ El lienzo está vacío. Dibuja la firma.'); return; }
 
                         const dataUrl = sigPad.toDataURL('image/png');
-                        
-                        // Capturamos la fecha y hora local
                         const ahora = new Date();
                         const fechaFmt = ahora.toLocaleDateString('es-ES') + ' a las ' + ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
                         
-                        // Guardamos la firma con su fecha
                         firmasActuales.push({ nombre: nombreSeleccionado, imagen: dataUrl, fecha: fechaFmt });
                         
                         localStorage.setItem('firmas_' + reunionId, JSON.stringify(firmasActuales));
@@ -467,60 +556,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </html>
         `);
         ventana.document.close();
-    };
-
-    // 3. Lógica de importación
-    window.importarActaParaFirmar = function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (data.tipo !== 'acta_para_firmar') {
-                    alert('❌ Este archivo no es un acta válida para firmar.');
-                    return;
-                }
-
-                const actaRecibida = data.acta;
-                let reunionesLocales = JSON.parse(localStorage.getItem('planIgualdadReuniones') || '[]');
-                
-                const idx = reunionesLocales.findIndex(r => r.id === actaRecibida.id);
-                if (idx === -1) {
-                    reunionesLocales.push(actaRecibida);
-                } else {
-                    reunionesLocales[idx] = { ...reunionesLocales[idx], ...actaRecibida };
-                }
-                localStorage.setItem('planIgualdadReuniones', JSON.stringify(reunionesLocales));
-
-                const firmasLocales = JSON.parse(localStorage.getItem('firmas_' + actaRecibida.id) || '[]');
-                if (data.firmas && Array.isArray(data.firmas)) {
-                    data.firmas.forEach(firmaRecibida => {
-                        const indexFirma = firmasLocales.findIndex(f => f.nombre === firmaRecibida.nombre);
-                        if (indexFirma === -1) {
-                            firmasLocales.push(firmaRecibida);
-                        } else {
-                            firmasLocales[indexFirma] = firmaRecibida;
-                        }
-                    });
-                }
-                localStorage.setItem('firmas_' + actaRecibida.id, JSON.stringify(firmasLocales));
-
-                alert('✅ Acta importada con éxito. Se han recuperado las firmas anteriores y se ha abierto el documento para que puedas firmar.');
-                
-                setTimeout(() => {
-                    window.generarPdfReunion(actaRecibida.id);
-                    setTimeout(() => location.reload(), 2000);
-                }, 500);
-
-            } catch (err) {
-                console.error(err);
-                alert('❌ Error al leer el archivo. Asegúrate de que es un archivo válido.');
-            }
-            event.target.value = '';
-        };
-        reader.readAsText(file);
     };
 
     renderLista();
