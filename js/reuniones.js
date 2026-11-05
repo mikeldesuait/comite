@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- FUNCIÓN GLOBAL PARA EXPORTAR EL ACTA (CON ETIQUETA DE BANDO) ---
+    // --- FUNCIÓN GLOBAL PARA EXPORTAR EL ACTA ---
     window.exportarActaParaFirmar = function(id) {
         const listaReuniones = JSON.parse(localStorage.getItem('planIgualdadReuniones') || '[]');
         const acta = listaReuniones.find(x => x.id === id);
@@ -199,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const listaMiembros = MODELO.getResponsables();
         const empresaReales = (config.empresaMiembros || []).map(m => m.nombre.toLowerCase().trim());
         
-        // SELLAMOS a los asistentes con su bando
         const asistentesSellados = (acta.asistentesData || []).map(a => {
             const m = listaMiembros.find(x => x.valor === a.nombre);
             const esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
@@ -353,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="no-print" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 0.5rem;">
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button onclick="abrirPanelFirmas()" style="padding: 10px 20px; background: #2e7d32; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">✍️ Firmar el Acta</button>
+                        <button onclick="detectarAvances()" style="padding: 10px 20px; background: #e65100; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">🔄 Detectar Avances</button>
                         <button onclick="window.opener.exportarActaParaFirmar('${r.id}')" style="padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">📤 Exportar Acta (JSON)</button>
                         <button onclick="window.print()" style="padding: 10px 20px; background: #6a1b9a; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">🖨️ Guardar como PDF</button>
                         <button onclick="window.close()" style="padding: 10px 20px; background: #ccc; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Cerrar</button>
@@ -436,19 +436,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${hallazgosHTML}
                 </div>
 
-                ${r.advertencia ? `
-                <div class="seccion" style="border: 2px solid #000; padding: 1rem; page-break-inside: avoid;">
-                    <h4 style="margin-top:0; text-transform: uppercase;">Advertencia Legal y Constancia de Incumplimiento</h4>
-                    <p style="margin: 0;">Se deja constancia expresa de que la Comisión Negociadora ha solicitado a la Dirección la documentación detallada, no habiendo sido entregada en su totalidad hasta la fecha. Se advierte a la Empresa de su obligación legal conforme al RD 901/2020. La persistencia obligará a la Comisión a poner los hechos en conocimiento de la Inspección de Trabajo.</p>
+                <!-- Sección de Avances (Oculta por defecto) -->
+                <div id="seccionAvances" class="seccion" style="display: none; border: 2px solid #e65100; padding: 1rem; background: #fff3e0; page-break-inside: avoid;">
+                    <h3 style="background: #e65100; color: #fff; padding: 0.5rem; margin-top: 0;">AVANCES DE LA AUDITORÍA EN ESTA SESIÓN</h3>
+                    <p>Durante la reunión, se han registrado los siguientes avances en el estado de los pasos del Plan:</p>
+                    <ul id="listaAvances" style="padding-left: 1.5rem; margin-bottom: 0;"></ul>
                 </div>
-                ` : ''}
-
-                <div class="seccion">
-                    <h3>6. PRÓXIMA REUNIÓN</h3>
-                    <p><strong>${fProx}</strong></p>
-                </div>
-
-                <p style="margin-top:2rem;">Y sin más asuntos que tratar, se da por finalizada la reunión, firmando el presente documento en prueba de conformidad.</p>
 
                 <div class="firmas" style="margin-top: 4rem; display: block; page-break-inside: avoid;">
                     <p style="text-align: center; font-size: 12px; color: #666; margin-bottom: 1rem; font-weight:bold;">POR LA REPRESENTACIÓN LEGAL DE LOS TRABAJADORES (RLPT)</p>
@@ -547,6 +540,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         select.value = '';
                         select.options[select.selectedIndex].disabled = true;
                         select.options[select.selectedIndex].textContent += ' (Ya firmado)';
+                    }
+
+                    function detectarAvances() {
+                        const cumplimiento = JSON.parse(localStorage.getItem('planIgualdadCumplimiento') || '{}');
+                        const fechaReunionStr = '${r.fecha}';
+                        
+                        let avances = [];
+                        
+                        for (const [pasoId, datos] of Object.entries(cumplimiento)) {
+                            const historial = datos.historial || [];
+                            const cambiosDelDia = historial.filter(function(h) { return h.fecha.startsWith(fechaReunionStr); });
+                            
+                            if (cambiosDelDia.length > 0) {
+                                const ultimoCambio = cambiosDelDia[cambiosDelDia.length - 1];
+                                avances.push('- ' + pasoId.toUpperCase() + ': ' + ultimoCambio.accion + ' (por ' + ultimoCambio.usuario + ')');
+                            }
+                        }
+                        
+                        if (avances.length === 0) {
+                            alert('No se han detectado cambios en la auditoria para el dia de esta reunion.');
+                            return;
+                        }
+                        
+                        const textoConfirm = avances.join(String.fromCharCode(10));
+                        const mensaje = 'Se han detectado los siguientes avances:' + String.fromCharCode(10, 10) + textoConfirm + String.fromCharCode(10, 10) + 'Quieres incrustarlos en el acta?';
+                        
+                        const confirmar = confirm(mensaje);
+                        
+                        if (confirmar) {
+                            const listaHTML = avances.map(function(a) { return '<li>' + a.substring(2) + '</li>'; }).join('');
+                            document.getElementById('listaAvances').innerHTML = listaHTML;
+                            document.getElementById('seccionAvances').style.display = 'block';
+                            document.getElementById('seccionAvances').scrollIntoView({ behavior: 'smooth' });
+                        }
                     }
 
                     function limpiarLienzo() { if (sigPad) sigPad.clear(); }
