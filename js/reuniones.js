@@ -224,14 +224,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const cumplimiento = MODELO.getEstadoCompleto();
         const listaMiembros = MODELO.getResponsables();
 
-        // Identificamos a los de la empresa por su nombre (sin importar mayúsculas/espacios)
         const empresaReales = (config.empresaMiembros || []).map(m => m.nombre.toLowerCase().trim());
         
         const asistentesParaFirmas = (r.asistentesData || []).map(a => {
             const m = listaMiembros.find(x => x.valor === a.nombre);
-            // Es de la empresa si su nombre está en la lista de empresa
-            const esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
-            return { nombre: a.nombre, estado: a.estado, cargo: m ? m.rol : '', esEmpresa: esEmpresa };
+            
+            // MAGIA: Si el asistente ya viene con la etiqueta "esEmpresa" del JSON, la usamos.
+            // Si no (porque es una reunión creada en este mismo PC), la calculamos.
+            let esEmpresa = false;
+            if (a.esEmpresa !== undefined) {
+                esEmpresa = a.esEmpresa;
+            } else {
+                esEmpresa = empresaReales.includes(a.nombre.toLowerCase().trim());
+            }
+            
+            return { nombre: a.nombre, estado: a.estado, cargo: m ? m.rol : (a.cargo || ''), esEmpresa: esEmpresa };
         });
 
         const fHoy = new Date(r.fecha).toLocaleDateString('es-ES');
